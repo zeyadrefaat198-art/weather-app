@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#071b36">
-<title>Weather App V2 | Zeyad Refaat</title>
+<title>Weather App V4 | Zeyad Refaat</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--glass:#ffffff1c;--line:#ffffff38;--muted:#d7eaff;--accent:#ffca64}
@@ -28,17 +28,21 @@ button{padding:13px 16px;border:0;border-radius:12px;background:var(--accent);co
 .forecast{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.day-card{padding:13px 4px;border-radius:13px;background:var(--glass);text-align:center}.day-card small{color:var(--muted);font-size:11px}.day-card .ico{font-size:25px;margin:7px}.day-card b{font-size:14px}.day-card span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
 .message{text-align:center;min-height:20px;margin-top:17px;color:#ffe3a8}.good{color:#b8f5cf}.error{color:#ffd0c9}footer{text-align:center;margin-top:25px;color:var(--muted);font-size:12px}
 @media(max-width:600px){.app{padding:19px 12px}h1{font-size:26px}.temp{font-size:52px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hourly{grid-template-columns:repeat(3,minmax(0,1fr))}.forecast{gap:5px}.day-card{padding:11px 2px}.controls{flex-direction:column}.search button{padding:12px 10px}}
+#weatherMap{height:320px;border-radius:15px;overflow:hidden;border:1px solid var(--line);z-index:1}.map-legend{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}.leaflet-popup-content{color:#17324d;font-weight:600}
+@media(max-width:600px){#weatherMap{height:280px}}
 </style>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
 <main class="app">
-<header><h1>Weather App V3</h1><p class="subtitle">Weather insights and forecast-based alerts</p></header>
+<header><h1>Weather App V4</h1><p class="subtitle">Local weather map and forecast-based alerts</p></header>
 <form class="search" id="searchForm" autocomplete="off">
 <input id="cityInput" placeholder="Enter a city..." aria-label="City name" required>
 <button id="searchButton">Search</button><div id="suggestions" class="suggestions hidden"></div>
 </form>
 <div class="controls">
 <button class="secondary" type="button" id="locationButton">📍 Use My Location</button>
+<button class="secondary" type="button" id="portFouadButton">📍 Port Fouad</button>
 <button class="secondary" type="button" id="unitToggle">Switch to °F</button>
 </div>
 <section class="weather">
@@ -48,6 +52,7 @@ button{padding:13px 16px;border:0;border-radius:12px;background:var(--accent);co
 <div id="rainAlert" class="alert">🌦️ Search for a city to check the rain forecast.</div>
 <div id="severeAlert" class="alert" aria-live="polite">⚠️ Severe-weather checks will appear here.</div>
 <section class="section"><h2>Current Weather</h2><div class="grid" id="details"><div class="card">Weather details will appear here.</div></div></section>
+<section class="section"><h2>Weather Around You</h2><div id="weatherMap" role="application" aria-label="Interactive map showing nearby temperatures"></div><p class="map-legend">Map markers show forecast temperatures at nearby points. Select a marker for its temperature. Map tiles © OpenStreetMap contributors.</p></section>
 <section class="section"><h2>Sunrise & Sunset</h2><div class="sun-grid"><div class="sun">🌅 Sunrise<strong id="sunrise">--:--</strong></div><div class="sun">🌇 Sunset<strong id="sunset">--:--</strong></div></div></section>
 <section class="section"><h2>Temperature Trend</h2><p class="sub">Temperature during the next 24 hours</p><div class="chart-wrap" id="chart"><p>Search for a city to see the chart.</p></div></section>
 <section class="section"><h2>Next 24 Hours</h2><div class="hourly" id="hourly"><p>Hourly forecast will appear here.</p></div></section>
@@ -60,6 +65,7 @@ const $=id=>document.getElementById(id);
 const form=$("searchForm"),input=$("cityInput"),suggestions=$("suggestions"),message=$("message");
 let unit=localStorage.getItem("temperatureUnit")||"C",weather=null,hourly=null,daily=null;
 let suggestionList=[],suggestionTimer=null,suggestionVersion=0,weatherVersion=0;
+let weatherMap=null,mapLayer=null,mapRequestVersion=0,lastCoords=null;
 const codes={0:["Clear sky","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],45:["Fog","🌫️"],48:["Fog","🌫️"],51:["Drizzle","🌦️"],53:["Drizzle","🌦️"],55:["Heavy drizzle","🌧️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],61:["Light rain","🌦️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],66:["Freezing rain","🌧️"],67:["Heavy freezing rain","🌧️"],71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],77:["Snow grains","🌨️"],80:["Showers","🌦️"],81:["Showers","🌧️"],82:["Heavy showers","⛈️"],85:["Snow showers","🌨️"],86:["Heavy snow showers","❄️"],95:["Thunderstorm","⛈️"],96:["Thunderstorm","⛈️"],99:["Heavy thunderstorm","⛈️"]};
 const info=code=>codes[code]||["Unknown","🌡️"];
 const temp=v=>v==null||!Number.isFinite(Number(v))?"--":`${Math.round(unit==="F"?v*9/5+32:v)}°${unit}`;
@@ -85,7 +91,7 @@ const d=$("details");d.innerHTML="";
 ["🌧️","Precipitation",num(weather.precipitation,1)+" mm"]
 ].forEach(x=>d.appendChild(card(...x)));
 $("sunrise").textContent=time(daily.sunrise?.[0]);$("sunset").textContent=time(daily.sunset?.[0]);
-renderRain();renderSevereAlerts();renderChart();renderHourly();renderDays();
+renderRain();renderSevereAlerts();renderChart();renderHourly();renderDays();if(lastCoords)renderWeatherMap(lastCoords.lat,lastCoords.lon);
 }
 function renderRain(){
 const p=hourly.precipitation_probability||[],rain=hourly.precipitation||[];
@@ -133,6 +139,7 @@ const el=$("forecast");el.innerHTML="";
 for(let i=1;i<=5;i++){if(!daily.time?.[i])continue;const d=document.createElement("div");d.className="day-card";d.innerHTML=`<small>${day(daily.time[i])}</small><div class="ico">${info(daily.weather_code[i])[1]}</div><b>${temp(daily.temperature_2m_max[i])}</b><span>${temp(daily.temperature_2m_min[i])}</span><span>💧 ${daily.precipitation_probability_max?.[i]??0}%</span>`;el.appendChild(d)}
 }
 async function loadWeather(lat,lon,name){
+lastCoords={lat,lon};
 const id=++weatherVersion;setMessage("Loading weather...");
 $("city").textContent=name;
 try{
@@ -143,6 +150,18 @@ if(!data.current||!data.hourly||!data.daily)throw Error("Weather data is incompl
 weather=data.current;hourly=data.hourly;daily=data.daily;render();setMessage("Weather updated successfully!","good");return true;
 }catch(e){if(id!==weatherVersion)return false;setMessage(e.message||"Could not load weather.","error");return false}
 }
+async function renderWeatherMap(lat,lon){
+const request=++mapRequestVersion;
+if(!window.L){$("weatherMap").textContent="Map library could not be loaded. Check your internet connection.";return;}
+if(!weatherMap){weatherMap=L.map("weatherMap",{scrollWheelZoom:false}).setView([lat,lon],11);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"© OpenStreetMap contributors"}).addTo(weatherMap);}
+weatherMap.setView([lat,lon],11);if(mapLayer)mapLayer.remove();mapLayer=L.layerGroup().addTo(weatherMap);
+const points=[{lat,lon,label:"Selected location"},{lat:lat+0.045,lon,label:"North"},{lat:lat-0.045,lon,label:"South"},{lat,lon:lon+0.055,label:"East"},{lat,lon:lon-0.055,label:"West"}];
+L.marker([lat,lon]).addTo(mapLayer).bindPopup("<b>Selected location</b><br>"+$("city").textContent).openPopup();
+const nearby=points.slice(1);
+await Promise.all(nearby.map(async p=>{try{const url=`https://api.open-meteo.com/v1/forecast?latitude=${p.lat}&longitude=${p.lon}&current=temperature_2m&timezone=auto`;const r=await fetch(url);if(!r.ok)throw Error();const d=await r.json();if(request!==mapRequestVersion)return;const v=d.current?.temperature_2m;if(v==null)return;L.circleMarker([p.lat,p.lon],{radius:9,color:"#ffffff",weight:2,fillColor:"#1479b8",fillOpacity:.9}).addTo(mapLayer).bindPopup(`<b>${p.label}</b><br>${temp(v)}`);}catch(e){/* Keep the main map usable if a nearby point fails. */}}));
+setTimeout(()=>weatherMap.invalidateSize(),100);
+}
+async function loadPortFouad(){setMessage("Finding Port Fouad...");try{const list=await findCity("Port Fouad",10);const p=list.find(x=>/port fouad/i.test(x.name))||list.find(x=>/Port Said/i.test(x.admin1||""));if(!p)throw Error("Port Fouad was not found. Try searching manually.");input.value="Port Fouad";closeSuggestions();await loadWeather(p.latitude,p.longitude,"Port Fouad, Port Said, Egypt");}catch(e){setMessage(e.message,"error")}}
 function placeName(p){return [p.name,p.admin1,p.country].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join(", ")}
 function closeSuggestions(){suggestions.classList.add("hidden");suggestions.innerHTML="";suggestionList=[]}
 async function findCity(q,limit=6){
@@ -168,6 +187,7 @@ list.forEach((p,i)=>{const b=document.createElement("button");b.type="button";b.
 });
 document.addEventListener("click",e=>{if(!form.contains(e.target))closeSuggestions()});
 form.addEventListener("submit",e=>{e.preventDefault();clearTimeout(suggestionTimer);searchCity(input.value)});
+$("portFouadButton").addEventListener("click",loadPortFouad);
 $("unitToggle").addEventListener("click",()=>{unit=unit==="C"?"F":"C";localStorage.setItem("temperatureUnit",unit);render()});
 $("locationButton").addEventListener("click",()=>{
 if(!navigator.geolocation){setMessage("Geolocation is not supported by this browser.","error");return}
@@ -177,5 +197,6 @@ navigator.geolocation.getCurrentPosition(async pos=>{await loadWeather(pos.coord
 $("unitToggle").textContent=unit==="C"?"Switch to °F":"Switch to °C";
 const saved=localStorage.getItem("lastCity");if(saved){input.value=saved;searchCity(saved)}
 </script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </body>
 </html>
