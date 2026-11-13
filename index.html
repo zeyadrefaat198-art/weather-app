@@ -67,7 +67,7 @@
       left: 0;
       right: 0;
       z-index: 10;
-      background: #ffffff;
+      background: white;
       color: #102b46;
       border-radius: 12px;
       overflow: hidden;
@@ -89,9 +89,7 @@
     }
 
     .suggestion:hover,
-    .suggestion.active {
-      background: #e4f2ff;
-    }
+    .suggestion.active { background: #e4f2ff; }
 
     .suggestion small {
       display: block;
@@ -147,6 +145,34 @@
     .detail strong {
       display: block;
       color: white;
+      font-size: 18px;
+    }
+
+    .sun-times {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .sun-card {
+      padding: 16px 8px;
+      border-radius: 14px;
+      background: #ffffff20;
+    }
+
+    .sun-card .sun-icon {
+      font-size: 27px;
+      margin-bottom: 8px;
+    }
+
+    .sun-card .sun-label {
+      color: #d7eaff;
+      font-size: 13px;
+      margin-bottom: 7px;
+    }
+
+    .sun-card strong {
       font-size: 18px;
     }
 
@@ -235,7 +261,6 @@
         aria-controls="suggestions"
       >
       <button type="submit">Search</button>
-
       <div class="suggestions hidden" id="suggestions"></div>
     </form>
 
@@ -257,6 +282,20 @@
         <div class="detail">Feels like<strong id="feels">--°C</strong></div>
         <div class="detail">Humidity<strong id="humidity">--%</strong></div>
         <div class="detail">Wind<strong id="wind">-- km/h</strong></div>
+      </div>
+
+      <div class="sun-times">
+        <div class="sun-card">
+          <div class="sun-icon">🌅</div>
+          <div class="sun-label">Sunrise</div>
+          <strong id="sunrise">--:--</strong>
+        </div>
+
+        <div class="sun-card">
+          <div class="sun-icon">🌇</div>
+          <div class="sun-label">Sunset</div>
+          <strong id="sunset">--:--</strong>
+        </div>
       </div>
     </section>
 
@@ -321,6 +360,31 @@
     function formatTemperature(value) {
       const unit = currentUnit === "C" ? "°C" : "°F";
       return `${Math.round(convertTemperature(value))}${unit}`;
+    }
+
+    function formatTime(dateTime) {
+      if (!dateTime) return "--:--";
+
+      const timePart = dateTime.split("T")[1];
+      if (!timePart) return "--:--";
+
+      const [hours, minutes] = timePart.split(":");
+      let hour = Number(hours);
+      const period = hour >= 12 ? "PM" : "AM";
+
+      hour = hour % 12 || 12;
+
+      return `${hour}:${minutes} ${period}`;
+    }
+
+    function displaySunTimes() {
+      if (!forecastData) return;
+
+      document.getElementById("sunrise").textContent =
+        formatTime(forecastData.sunrise?.[0]);
+
+      document.getElementById("sunset").textContent =
+        formatTime(forecastData.sunset?.[0]);
     }
 
     function displayTemperature() {
@@ -390,7 +454,7 @@
 
       try {
         const weatherResponse = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=6&timezone=auto`
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min&forecast_days=6&timezone=auto`
         );
 
         if (!weatherResponse.ok) {
@@ -412,6 +476,7 @@
           (current.weather_code === 0 ? "🌙" : icon);
 
         displayTemperature();
+        displaySunTimes();
 
         document.getElementById("description").textContent = description;
         document.getElementById("city").textContent = locationName;
@@ -696,19 +761,4 @@
     locationButton.addEventListener("click", getMyLocation);
 
     form.addEventListener("submit", (event) => {
-      event.preventDefault();
-      getWeather(input.value.trim());
-    });
-
-    unitToggle.textContent =
-      currentUnit === "C" ? "Switch to °F" : "Switch to °C";
-
-    const lastCity = localStorage.getItem("lastCity");
-
-    if (lastCity) {
-      input.value = lastCity;
-      getWeather(lastCity);
-    }
-  </script>
-</body>
-</html>
+  
