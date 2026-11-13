@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather App | Zeyad Refaat</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      font-family: Arial, sans-serif;
+      color: white;
+      background: linear-gradient(135deg, #071b36, #145b91, #36a4c9);
+      display: grid;
+      place-items: center;
+      padding: 20px;
+    }
+    .app {
+      width: 100%;
+      max-width: 430px;
+      padding: 30px;
+      border: 1px solid #ffffff40;
+      border-radius: 25px;
+      background: #ffffff18;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 20px 50px #00152c55;
+      text-align: center;
+    }
+    h1 { font-size: 28px; margin-bottom: 8px; }
+    .subtitle { color: #d7eaff; margin-bottom: 25px; }
+    .search { display: flex; gap: 8px; }
+    input {
+      min-width: 0;
+      flex: 1;
+      padding: 13px;
+      border: 0;
+      border-radius: 12px;
+      outline: none;
+      font-size: 15px;
+    }
+    button {
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 12px;
+      background: #ffca64;
+      color: #102b46;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #ffdc91; }
+    .weather { margin-top: 28px; }
+    .icon { font-size: 75px; margin: 15px 0; }
+    .temp { font-size: 58px; font-weight: bold; }
+    .description { font-size: 20px; margin: 8px 0; }
+    .city { font-size: 23px; margin-top: 15px; }
+    .details {
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #ffffff40;
+    }
+    .detail { color: #e4f2ff; font-size: 14px; line-height: 1.8; }
+    .detail strong { display: block; color: white; font-size: 18px; }
+    .message { margin-top: 18px; color: #ffe3a8; min-height: 20px; }
+    footer { margin-top: 25px; font-size: 12px; color: #d7eaff; }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <h1>Weather App</h1>
+    <p class="subtitle">Check the weather anywhere</p>
+
+    <form class="search" id="searchForm">
+      <input id="cityInput" type="text" placeholder="Enter city name..." required>
+      <button type="submit">Search</button>
+    </form>
+
+    <section class="weather" id="weather">
+      <div class="icon" id="icon">🌤️</div>
+      <div class="temp" id="temp">--°C</div>
+      <div class="description" id="description">Search for a city</div>
+      <div class="city" id="city">Your City</div>
+
+      <div class="details">
+        <div class="detail">Feels like<strong id="feels">--°C</strong></div>
+        <div class="detail">Humidity<strong id="humidity">--%</strong></div>
+        <div class="detail">Wind<strong id="wind">-- km/h</strong></div>
+      </div>
+    </section>
+
+    <p class="message" id="message"></p>
+    <footer>Made by Zeyad Refaat · 2026</footer>
+  </main>
+
+  <script>
+    const form = document.getElementById("searchForm");
+    const input = document.getElementById("cityInput");
+    const message = document.getElementById("message");
+
+    const weatherCodes = {
+      0: ["Clear sky", "☀️"],
+      1: ["Mainly clear", "🌤️"],
+      2: ["Partly cloudy", "⛅"],
+      3: ["Overcast", "☁️"],
+      45: ["Fog", "🌫️"],
+      48: ["Rime fog", "🌫️"],
+      51: ["Light drizzle", "🌦️"],
+      53: ["Drizzle", "🌦️"],
+      55: ["Heavy drizzle", "🌧️"],
+      61: ["Light rain", "🌦️"],
+      63: ["Rain", "🌧️"],
+      65: ["Heavy rain", "🌧️"],
+      71: ["Light snow", "🌨️"],
+      73: ["Snow", "🌨️"],
+      75: ["Heavy snow", "❄️"],
+      80: ["Rain showers", "🌦️"],
+      81: ["Rain showers", "🌧️"],
+      82: ["Heavy showers", "⛈️"],
+      95: ["Thunderstorm", "⛈️"]
+    };
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const cityName = input.value.trim();
+      if (!cityName) return;
+
+      message.textContent = "Loading...";
+      
+      try {
+        const geoResponse = await fetch(
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`
+        );
+        if (!geoResponse.ok) throw new Error("Network error");
+
+        const geoData = await geoResponse.json();
+        if (!geoData.results?.length) {
+          throw new Error("City not found. Try another name.");
+        }
+
+        const place = geoData.results[0];
+
+        const weatherResponse = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&timezone=auto`
+        );
+        if (!weatherResponse.ok) throw new Error("Could not get weather data.");
+
+        const data = await weatherResponse.json();
+        const current = data.current;
+        const [description, icon] = weatherCodes[current.weather_code] || ["Unknown", "🌡️"];
+
+        document.getElementById("icon").textContent =
+          current.is_day ? icon : (current.weather_code === 0 ? "🌙" : icon);
+        document.getElementById("temp").textContent =
+          `${Math.round(current.temperature_2m)}°C`;
+        document.getElementById("description").textContent = description;
+        document.getElementById("city").textContent =
+          `${place.name}, ${place.country}`;
+        document.getElementById("feels").textContent =
+          `${Math.round(current.apparent_temperature)}°C`;
+        document.getElementById("humidity").textContent =
+          `${current.relative_humidity_2m}%`;
+        document.getElementById("wind").textContent =
+          `${Math.round(current.wind_speed_10m)} km/h`;
+
+        message.textContent = "Weather updated successfully!";
+      } catch (error) {
+        message.textContent = error.message || "Something went wrong.";
+      }
+    });
+  </script>
+</body>
+</html>
