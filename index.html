@@ -32,7 +32,12 @@
 
     h1 { font-size: 28px; margin-bottom: 8px; }
     .subtitle { color: #d7eaff; margin-bottom: 25px; }
-    .search { display: flex; gap: 8px; }
+
+    .search {
+      display: flex;
+      gap: 8px;
+      position: relative;
+    }
 
     input {
       min-width: 0;
@@ -55,6 +60,50 @@
     }
 
     button:hover { background: #ffdc91; }
+
+    .suggestions {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      z-index: 10;
+      background: #ffffff;
+      color: #102b46;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 25px #00152c55;
+      text-align: left;
+    }
+
+    .suggestions.hidden { display: none; }
+
+    .suggestion {
+      display: block;
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 0;
+      background: white;
+      color: #102b46;
+      text-align: left;
+      font-weight: normal;
+    }
+
+    .suggestion:hover,
+    .suggestion.active {
+      background: #e4f2ff;
+    }
+
+    .suggestion small {
+      display: block;
+      margin-top: 4px;
+      color: #55718c;
+    }
+
+    .suggestion-message {
+      padding: 12px 15px;
+      color: #55718c;
+      font-size: 14px;
+    }
 
     .location-button {
       width: 100%;
@@ -175,9 +224,19 @@
     <h1>Weather App</h1>
     <p class="subtitle">Check the weather anywhere</p>
 
-    <form class="search" id="searchForm">
-      <input id="cityInput" type="text" placeholder="Enter city name..." required>
+    <form class="search" id="searchForm" autocomplete="off">
+      <input
+        id="cityInput"
+        type="text"
+        placeholder="Enter city name..."
+        required
+        aria-label="City name"
+        aria-autocomplete="list"
+        aria-controls="suggestions"
+      >
       <button type="submit">Search</button>
+
+      <div class="suggestions hidden" id="suggestions"></div>
     </form>
 
     <button class="location-button" id="locationButton" type="button">
@@ -218,11 +277,17 @@
     const message = document.getElementById("message");
     const unitToggle = document.getElementById("unitToggle");
     const locationButton = document.getElementById("locationButton");
+    const suggestions = document.getElementById("suggestions");
 
     let currentUnit = localStorage.getItem("temperatureUnit") || "C";
     let currentTemperature = null;
     let currentFeelsLike = null;
     let forecastData = null;
+
+    let suggestionResults = [];
+    let activeSuggestion = -1;
+    let searchTimer = null;
+    let suggestionRequest = 0;
 
     const weatherCodes = {
       0: ["Clear sky", "☀️"],
@@ -358,17 +423,134 @@
           `${Math.round(current.wind_speed_10m)} km/h`;
 
         message.textContent = "Weather updated successfully!";
+        return true;
 
       } catch (error) {
         message.textContent = error.message || "Something went wrong.";
         document.getElementById("forecast").textContent =
           "Forecast unavailable. Try again.";
+        return false;
+      }
+    }
+
+    function getPlaceLabel(place) {
+      return [
+        place.name,
+        place.admin1,
+        place.country
+      ].filter(Boolean).filter((value, index, array) =>
+        array.indexOf(value) === index
+      ).join(", ");
+    }
+
+    function hideSuggestions() {
+      suggestions.classList.add("hidden");
+      suggestions.innerHTML = "";
+      suggestionResults = [];
+      activeSuggestion = -1;
+    }
+
+    function updateActiveSuggestion() {
+      const buttons = suggestions.querySelectorAll(".suggestion");
+
+      buttons.forEach((button, index) => {
+        button.classList.toggle("active", index === activeSuggestion);
+      });
+    }
+
+    async function searchSuggestions(query) {
+      const requestId = ++suggestionRequest;
+
+      if (query.length < 2) {
+        hideSuggestions();
+        return;
+      }
+
+      suggestions.classList.remove("hidden");
+      suggestions.innerHTML =
+        '<div class="suggestion-message">Searching...</div>';
+
+      try {
+        const response = await fetch(
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=en&format=json`
+        );
+
+        if (!response.ok) throw new Error("Search failed");
+
+        const data = await response.json();
+
+        if (requestId !== suggestionRequest) return;
+
+        suggestionResults = data.results || [];
+        activeSuggestion = -1;
+        suggestions.innerHTML = "";
+
+        if (suggestionResults.length === 0) {
+          suggestions.innerHTML =
+            '<div class="suggestion-message">No matching cities found.</div>';
+          suggestions.classList.remove("hidden");
+          return;
+        }
+
+        suggestionResults.forEach((place, index) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "suggestion";
+
+          const name = document.createElement("span");
+          name.textContent = place.name;
+
+          const details = document.createElement("small");
+          details.textContent = [
+            place.admin1,
+            place.country
+          ].filter(Boolean).join(", ");
+
+          button.append(name, details);
+
+          button.addEventListener("click", () => {
+            selectSuggestion(index);
+          });
+
+          suggestions.appendChild(button);
+        });
+
+        suggestions.classList.remove("hidden");
+
+      } catch (error) {
+        if (requestId !== suggestionRequest) return;
+
+        suggestions.innerHTML =
+          '<div class="suggestion-message">Could not load suggestions.</div>';
+        suggestions.classList.remove("hidden");
+      }
+    }
+
+    async function selectSuggestion(index) {
+      const place = suggestionResults[index];
+
+      if (!place) return;
+
+      clearTimeout(searchTimer);
+      input.value = place.name;
+      hideSuggestions();
+
+      const success = await loadWeather(
+        place.latitude,
+        place.longitude,
+        getPlaceLabel(place)
+      );
+
+      if (success) {
+        localStorage.setItem("lastCity", place.name);
       }
     }
 
     async function getWeather(cityName) {
       if (!cityName) return;
 
+      hideSuggestions();
+      suggestionRequest++;
       message.textContent = "Searching for city...";
 
       try {
@@ -386,13 +568,15 @@
 
         const place = geoData.results[0];
 
-        await loadWeather(
+        const success = await loadWeather(
           place.latitude,
           place.longitude,
-          `${place.name}, ${place.country}`
+          getPlaceLabel(place)
         );
 
-        localStorage.setItem("lastCity", place.name);
+        if (success) {
+          localStorage.setItem("lastCity", place.name);
+        }
 
       } catch (error) {
         message.textContent = error.message || "Something went wrong.";
@@ -402,6 +586,8 @@
     }
 
     function getMyLocation() {
+      hideSuggestions();
+
       if (!navigator.geolocation) {
         message.textContent =
           "Geolocation is not supported by your browser.";
@@ -450,6 +636,56 @@
         }
       );
     }
+
+    input.addEventListener("input", () => {
+      clearTimeout(searchTimer);
+
+      const query = input.value.trim();
+
+      if (query.length < 2) {
+        suggestionRequest++;
+        hideSuggestions();
+        return;
+      }
+
+      searchTimer = setTimeout(() => {
+        searchSuggestions(query);
+      }, 300);
+    });
+
+    input.addEventListener("keydown", (event) => {
+      if (suggestions.classList.contains("hidden")) return;
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        activeSuggestion = Math.min(
+          activeSuggestion + 1,
+          suggestionResults.length - 1
+        );
+        updateActiveSuggestion();
+      }
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        activeSuggestion = Math.max(activeSuggestion - 1, 0);
+        updateActiveSuggestion();
+      }
+
+      if (event.key === "Enter" && activeSuggestion >= 0) {
+        event.preventDefault();
+        selectSuggestion(activeSuggestion);
+      }
+
+      if (event.key === "Escape") {
+        hideSuggestions();
+      }
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!form.contains(event.target)) {
+        hideSuggestions();
+      }
+    });
 
     unitToggle.addEventListener("click", () => {
       currentUnit = currentUnit === "C" ? "F" : "C";
