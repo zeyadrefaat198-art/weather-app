@@ -56,8 +56,18 @@
 
     button:hover { background: #ffdc91; }
 
+    .location-button {
+      width: 100%;
+      margin-top: 12px;
+      background: #ffffff25;
+      color: white;
+      border: 1px solid #ffffff60;
+    }
+
+    .location-button:hover { background: #ffffff40; }
+
     .unit-toggle {
-      margin-top: 18px;
+      margin-top: 12px;
       background: #ffffff25;
       color: white;
       border: 1px solid #ffffff60;
@@ -170,6 +180,10 @@
       <button type="submit">Search</button>
     </form>
 
+    <button class="location-button" id="locationButton" type="button">
+      📍 Use My Location
+    </button>
+
     <button class="unit-toggle" id="unitToggle" type="button">
       Switch to °F
     </button>
@@ -203,6 +217,7 @@
     const input = document.getElementById("cityInput");
     const message = document.getElementById("message");
     const unitToggle = document.getElementById("unitToggle");
+    const locationButton = document.getElementById("locationButton");
 
     let currentUnit = localStorage.getItem("temperatureUnit") || "C";
     let currentTemperature = null;
@@ -266,9 +281,7 @@
       forecastElement.innerHTML = "";
 
       for (let i = 1; i <= 5; i++) {
-        const date = new Date(
-          forecastData.time[i] + "T12:00:00"
-        );
+        const date = new Date(forecastData.time[i] + "T12:00:00");
 
         const dayName = date.toLocaleDateString("en-US", {
           weekday: "short"
@@ -305,36 +318,14 @@
       }
     }
 
-    unitToggle.addEventListener("click", () => {
-      currentUnit = currentUnit === "C" ? "F" : "C";
-      localStorage.setItem("temperatureUnit", currentUnit);
-      displayTemperature();
-    });
-
-    async function getWeather(cityName) {
-      if (!cityName) return;
-
-      message.textContent = "Loading...";
+    async function loadWeather(latitude, longitude, locationName) {
+      message.textContent = "Loading weather...";
       document.getElementById("forecast").textContent =
         "Loading forecast...";
 
       try {
-        const geoResponse = await fetch(
-          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`
-        );
-
-        if (!geoResponse.ok) throw new Error("Network error");
-
-        const geoData = await geoResponse.json();
-
-        if (!geoData.results?.length) {
-          throw new Error("City not found. Try another name.");
-        }
-
-        const place = geoData.results[0];
-
         const weatherResponse = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=6&timezone=auto`
+          `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=6&timezone=auto`
         );
 
         if (!weatherResponse.ok) {
@@ -358,9 +349,7 @@
         displayTemperature();
 
         document.getElementById("description").textContent = description;
-
-        document.getElementById("city").textContent =
-          `${place.name}, ${place.country}`;
+        document.getElementById("city").textContent = locationName;
 
         document.getElementById("humidity").textContent =
           `${current.relative_humidity_2m}%`;
@@ -368,18 +357,107 @@
         document.getElementById("wind").textContent =
           `${Math.round(current.wind_speed_10m)} km/h`;
 
-        localStorage.setItem("lastCity", place.name);
-
         message.textContent = "Weather updated successfully!";
 
       } catch (error) {
-        message.textContent =
-          error.message || "Something went wrong.";
+        message.textContent = error.message || "Something went wrong.";
+        document.getElementById("forecast").textContent =
+          "Forecast unavailable. Try again.";
+      }
+    }
 
+    async function getWeather(cityName) {
+      if (!cityName) return;
+
+      message.textContent = "Searching for city...";
+
+      try {
+        const geoResponse = await fetch(
+          `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`
+        );
+
+        if (!geoResponse.ok) throw new Error("Network error");
+
+        const geoData = await geoResponse.json();
+
+        if (!geoData.results?.length) {
+          throw new Error("City not found. Try another name.");
+        }
+
+        const place = geoData.results[0];
+
+        await loadWeather(
+          place.latitude,
+          place.longitude,
+          `${place.name}, ${place.country}`
+        );
+
+        localStorage.setItem("lastCity", place.name);
+
+      } catch (error) {
+        message.textContent = error.message || "Something went wrong.";
         document.getElementById("forecast").textContent =
           "Forecast unavailable. Try searching again.";
       }
     }
+
+    function getMyLocation() {
+      if (!navigator.geolocation) {
+        message.textContent =
+          "Geolocation is not supported by your browser.";
+        return;
+      }
+
+      locationButton.disabled = true;
+      locationButton.textContent = "Getting your location...";
+      message.textContent = "Please allow location access.";
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+
+          await loadWeather(
+            latitude,
+            longitude,
+            "Your Current Location"
+          );
+
+          locationButton.disabled = false;
+          locationButton.textContent = "📍 Use My Location";
+        },
+
+        (error) => {
+          locationButton.disabled = false;
+          locationButton.textContent = "📍 Use My Location";
+
+          if (error.code === 1) {
+            message.textContent =
+              "Location permission denied. Allow it in browser settings.";
+          } else if (error.code === 2) {
+            message.textContent =
+              "Your location is currently unavailable.";
+          } else {
+            message.textContent =
+              "Location request timed out. Try again.";
+          }
+        },
+
+        {
+          enableHighAccuracy: false,
+          timeout: 15000,
+          maximumAge: 300000
+        }
+      );
+    }
+
+    unitToggle.addEventListener("click", () => {
+      currentUnit = currentUnit === "C" ? "F" : "C";
+      localStorage.setItem("temperatureUnit", currentUnit);
+      displayTemperature();
+    });
+
+    locationButton.addEventListener("click", getMyLocation);
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
