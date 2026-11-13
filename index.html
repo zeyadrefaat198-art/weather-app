@@ -6,334 +6,144 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#071b36">
 <title>Weather App | Zeyad Refaat</title>
-
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-
-body{
-  min-height:100vh;
-  padding:25px 15px;
-  font-family:Arial,sans-serif;
-  color:white;
-  background:linear-gradient(135deg,#071b36,#145b91,#36a4c9);
-}
-
-.app{
-  width:100%;
-  max-width:900px;
-  margin:auto;
-  padding:28px;
-  border:1px solid #ffffff40;
-  border-radius:25px;
-  background:#ffffff15;
-  backdrop-filter:blur(15px);
-  box-shadow:0 20px 50px #00152c55;
-}
-
+body{min-height:100vh;padding:25px 15px;font-family:Arial,sans-serif;color:white;background:linear-gradient(135deg,#071b36,#145b91,#36a4c9)}
+.app{width:100%;max-width:900px;margin:auto;padding:28px;border:1px solid #ffffff40;border-radius:25px;background:#ffffff15;backdrop-filter:blur(15px);box-shadow:0 20px 50px #00152c55}
 header{text-align:center;margin-bottom:25px}
 h1{font-size:32px;margin-bottom:8px}
 .subtitle{color:#d7eaff}
-
-.search{
-  display:flex;
-  gap:8px;
-  position:relative;
-}
-
-input{
-  min-width:0;
-  flex:1;
-  padding:14px;
-  border:0;
-  border-radius:12px;
-  outline:none;
-  font-size:15px;
-}
-
-button{
-  padding:13px 17px;
-  border:0;
-  border-radius:12px;
-  background:#ffca64;
-  color:#102b46;
-  font-weight:bold;
-  cursor:pointer;
-}
-
+.search{display:flex;gap:8px;position:relative}
+input{min-width:0;flex:1;padding:14px;border:0;border-radius:12px;outline:none;font-size:15px}
+button{padding:13px 17px;border:0;border-radius:12px;background:#ffca64;color:#102b46;font-weight:bold;cursor:pointer}
 button:hover{background:#ffdc91}
 button:disabled{opacity:.6;cursor:wait}
-
-.suggestions{
-  position:absolute;
-  top:calc(100% + 8px);
-  left:0;
-  right:0;
-  z-index:10;
-  background:white;
-  color:#102b46;
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 8px 25px #00152c55;
-}
-
+.suggestions{position:absolute;top:calc(100% + 8px);left:0;right:0;z-index:10;background:white;color:#102b46;border-radius:12px;overflow:hidden;box-shadow:0 8px 25px #00152c55}
 .suggestions.hidden{display:none}
-
-.suggestion{
-  display:block;
-  width:100%;
-  padding:12px 15px;
-  border-radius:0;
-  background:white;
-  color:#102b46;
-  text-align:left;
-  font-weight:normal;
-}
-
+.suggestion{display:block;width:100%;padding:12px 15px;border-radius:0;background:white;color:#102b46;text-align:left;font-weight:normal}
 .suggestion:hover,.suggestion.active{background:#e4f2ff}
 .suggestion small{display:block;margin-top:4px;color:#55718c}
 .suggestion-message{padding:12px 15px;color:#55718c}
-
-.controls{
-  display:flex;
-  gap:10px;
-  margin-top:12px;
-}
-
+.controls{display:flex;gap:10px;margin-top:12px}
 .controls button{flex:1}
-
-.secondary{
-  background:#ffffff25;
-  color:white;
-  border:1px solid #ffffff60;
-}
-
+.secondary{background:#ffffff25;color:white;border:1px solid #ffffff60}
 .secondary:hover{background:#ffffff40}
-
 .weather{text-align:center;margin-top:30px}
-
 .icon{font-size:85px;margin:10px 0}
 .temp{font-size:65px;font-weight:bold}
 .description{font-size:21px;margin:8px 0}
 .city{font-size:25px;margin-top:12px;color:#ffdf9a}
-
-.section{
-  margin-top:30px;
-  padding-top:23px;
-  border-top:1px solid #ffffff40;
-}
-
-.section h2{
-  font-size:21px;
-  margin-bottom:17px;
-}
-
-.section-subtitle{
-  color:#d7eaff;
-  font-size:13px;
-  margin-top:-10px;
-  margin-bottom:17px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:10px;
-}
-
-.info-card{
-  min-width:0;
-  padding:16px 9px;
-  border-radius:15px;
-  background:#ffffff20;
-  text-align:center;
-}
-
+.section{margin-top:30px;padding-top:23px;border-top:1px solid #ffffff40}
+.section h2{font-size:21px;margin-bottom:17px}
+.section-subtitle{color:#d7eaff;font-size:13px;margin-top:-10px;margin-bottom:17px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.info-card{min-width:0;padding:16px 9px;border-radius:15px;background:#ffffff20;text-align:center}
 .info-icon{font-size:25px;margin-bottom:9px}
 .info-label{font-size:12px;color:#d7eaff;margin-bottom:8px}
 .info-value{font-size:18px;font-weight:bold;overflow-wrap:anywhere}
 .info-extra{font-size:11px;color:#d7eaff;margin-top:6px}
-
-.sun-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:12px;
-}
-
-.sun-card{
-  padding:18px;
-  border-radius:15px;
-  background:#ffffff20;
-  text-align:center;
-}
-
+.sun-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sun-card{padding:18px;border-radius:15px;background:#ffffff20;text-align:center}
 .sun-card .info-icon{font-size:30px}
 .sun-card strong{font-size:20px}
-
-.hourly{
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:9px;
-}
-
-.hour-card{
-  min-width:0;
-  padding:13px 5px;
-  border-radius:14px;
-  background:#ffffff20;
-  text-align:center;
-}
-
+.hourly{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.hour-card{min-width:0;padding:13px 5px;border-radius:14px;background:#ffffff20;text-align:center}
 .hour-time{font-size:12px;color:#d7eaff;margin-bottom:9px}
 .hour-icon{font-size:25px;margin-bottom:8px}
 .hour-temp{font-size:17px;font-weight:bold}
 .hour-rain{font-size:11px;color:#d7eaff;margin-top:7px}
-
-.forecast{
-  display:grid;
-  grid-template-columns:repeat(5,minmax(0,1fr));
-  gap:9px;
-}
-
-.forecast-day{
-  min-width:0;
-  padding:15px 5px;
-  border-radius:14px;
-  background:#ffffff20;
-  text-align:center;
-}
-
+.forecast{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}
+.forecast-day{min-width:0;padding:15px 5px;border-radius:14px;background:#ffffff20;text-align:center}
 .forecast-day .day{font-size:13px;color:#d7eaff;margin-bottom:10px}
 .forecast-icon{font-size:27px;margin-bottom:10px}
 .forecast-day .max{font-size:16px;font-weight:bold}
 .forecast-day .min{font-size:13px;color:#d7eaff;margin-top:5px}
 .forecast-rain{font-size:11px;color:#d7eaff;margin-top:8px}
-
-.message{
-  margin-top:22px;
-  min-height:20px;
-  color:#ffe3a8;
-  text-align:center;
-}
-
-footer{
-  margin-top:30px;
-  text-align:center;
-  font-size:12px;
-  color:#d7eaff;
-}
-
+.message{margin-top:22px;min-height:20px;color:#ffe3a8;text-align:center}
+footer{margin-top:30px;text-align:center;font-size:12px;color:#d7eaff}
 .loading{text-align:center;color:#d7eaff;padding:15px}
 .good{color:#b8f5cf}
 .warning{color:#ffe3a8}
-
 @media(max-width:550px){
-  .app{padding:20px 14px}
-  h1{font-size:27px}
-  .temp{font-size:55px}
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .hourly{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .forecast{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
-  .forecast-day{padding:12px 2px}
-  .forecast-day .day{font-size:11px}
-  .forecast-day .max{font-size:13px}
-  .forecast-day .min{font-size:11px}
-  .forecast-rain{font-size:10px}
-  .controls{flex-direction:column}
+.app{padding:20px 14px}
+h1{font-size:27px}
+.temp{font-size:55px}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.hourly{grid-template-columns:repeat(2,minmax(0,1fr))}
+.forecast{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.forecast-day{padding:12px 2px}
+.forecast-day .day{font-size:11px}
+.forecast-day .max{font-size:13px}
+.forecast-day .min{font-size:11px}
+.forecast-rain{font-size:10px}
+.controls{flex-direction:column}
 }
 </style>
 </head>
-
 <body>
 <main class="app">
-
 <header>
-  <h1>Weather App</h1>
-  <p class="subtitle">Your complete weather dashboard</p>
+<h1>Weather App</h1>
+<p class="subtitle">Your complete weather dashboard</p>
 </header>
 
 <form class="search" id="searchForm" autocomplete="off">
-  <input id="cityInput" type="text"
-    placeholder="Enter city name..."
-    required aria-label="City name"
-    aria-autocomplete="list"
-    aria-controls="suggestions">
-  <button type="submit" id="searchButton">Search</button>
-  <div class="suggestions hidden" id="suggestions"></div>
+<input id="cityInput" type="text" placeholder="Enter city name..." required aria-label="City name" aria-autocomplete="list" aria-controls="suggestions">
+<button type="submit" id="searchButton">Search</button>
+<div class="suggestions hidden" id="suggestions"></div>
 </form>
 
 <div class="controls">
-  <button class="secondary" id="locationButton" type="button">
-    📍 Use My Location
-  </button>
-  <button class="secondary" id="unitToggle" type="button">
-    Switch to °F
-  </button>
+<button class="secondary" id="locationButton" type="button">📍 Use My Location</button>
+<button class="secondary" id="unitToggle" type="button">Switch to °F</button>
 </div>
 
 <section class="weather">
-  <div class="icon" id="icon">🌤️</div>
-  <div class="temp" id="temp">--°C</div>
-  <div class="description" id="description">Search for a city</div>
-  <div class="city" id="city">Your City</div>
+<div class="icon" id="icon">🌤️</div>
+<div class="temp" id="temp">--°C</div>
+<div class="description" id="description">Search for a city</div>
+<div class="city" id="city">Your City</div>
 </section>
 
 <section class="section">
-  <h2>Current Weather Details</h2>
-  <div class="grid" id="currentDetails">
-    <p class="loading">Search for a city to see weather details.</p>
-  </div>
+<h2>Current Weather Details</h2>
+<div class="grid" id="currentDetails"><p class="loading">Search for a city to see weather details.</p></div>
 </section>
 
 <section class="section">
-  <h2>Sunrise & Sunset</h2>
-  <div class="sun-grid">
-    <div class="sun-card">
-      <div class="info-icon">🌅</div>
-      <div class="info-label">Sunrise</div>
-      <strong id="sunrise">--:--</strong>
-    </div>
-    <div class="sun-card">
-      <div class="info-icon">🌇</div>
-      <div class="info-label">Sunset</div>
-      <strong id="sunset">--:--</strong>
-    </div>
-  </div>
+<h2>Sunrise & Sunset</h2>
+<div class="sun-grid">
+<div class="sun-card"><div class="info-icon">🌅</div><div class="info-label">Sunrise</div><strong id="sunrise">--:--</strong></div>
+<div class="sun-card"><div class="info-icon">🌇</div><div class="info-label">Sunset</div><strong id="sunset">--:--</strong></div>
+</div>
 </section>
 
 <section class="section">
-  <h2>Next 24 Hours</h2>
-  <p class="section-subtitle">Hourly temperature and precipitation probability</p>
-  <div class="hourly" id="hourly">
-    <p class="loading">Search for a city to see hourly forecast.</p>
-  </div>
+<h2>Next 24 Hours</h2>
+<p class="section-subtitle">Hourly temperature and precipitation probability</p>
+<div class="hourly" id="hourly"><p class="loading">Search for a city to see hourly forecast.</p></div>
 </section>
 
 <section class="section">
-  <h2>5-Day Forecast</h2>
-  <div class="forecast" id="forecast">
-    <p class="loading">Search for a city to see the forecast.</p>
-  </div>
+<h2>5-Day Forecast</h2>
+<div class="forecast" id="forecast"><p class="loading">Search for a city to see the forecast.</p></div>
 </section>
 
 <p class="message" id="message" aria-live="polite"></p>
-
 <footer>Made by Zeyad Refaat · 2026</footer>
 </main>
 
 <script>
 const $ = id => document.getElementById(id);
-
 const form = $("searchForm");
 const input = $("cityInput");
 const message = $("message");
 const suggestions = $("suggestions");
 const locationButton = $("locationButton");
 const unitToggle = $("unitToggle");
-const searchButton = $("searchButton");
 
 let currentUnit = localStorage.getItem("temperatureUnit") || "C";
 let currentTemperature = null;
-let currentFeelsLike = null;
 let currentData = null;
 let dailyData = null;
 let hourlyData = null;
@@ -344,558 +154,406 @@ let suggestionRequest = 0;
 let weatherRequest = 0;
 
 const weatherCodes = {
-  0:["Clear sky","☀️"],
-  1:["Mainly clear","🌤️"],
-  2:["Partly cloudy","⛅"],
-  3:["Overcast","☁️"],
-  45:["Fog","🌫️"],
-  48:["Rime fog","🌫️"],
-  51:["Light drizzle","🌦️"],
-  53:["Drizzle","🌦️"],
-  55:["Heavy drizzle","🌧️"],
-  56:["Freezing drizzle","🌧️"],
-  57:["Freezing drizzle","🌧️"],
-  61:["Light rain","🌦️"],
-  63:["Rain","🌧️"],
-  65:["Heavy rain","🌧️"],
-  66:["Freezing rain","🌧️"],
-  67:["Heavy freezing rain","🌧️"],
-  71:["Light snow","🌨️"],
-  73:["Snow","🌨️"],
-  75:["Heavy snow","❄️"],
-  77:["Snow grains","🌨️"],
-  80:["Rain showers","🌦️"],
-  81:["Rain showers","🌧️"],
-  82:["Heavy showers","⛈️"],
-  85:["Snow showers","🌨️"],
-  86:["Heavy snow showers","❄️"],
-  95:["Thunderstorm","⛈️"],
-  96:["Thunderstorm with hail","⛈️"],
-  99:["Heavy thunderstorm","⛈️"]
+0:["Clear sky","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],
+45:["Fog","🌫️"],48:["Rime fog","🌫️"],51:["Light drizzle","🌦️"],53:["Drizzle","🌦️"],
+55:["Heavy drizzle","🌧️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],
+61:["Light rain","🌦️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],66:["Freezing rain","🌧️"],
+67:["Heavy freezing rain","🌧️"],71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],
+77:["Snow grains","🌨️"],80:["Rain showers","🌦️"],81:["Rain showers","🌧️"],82:["Heavy showers","⛈️"],
+85:["Snow showers","🌨️"],86:["Heavy snow showers","❄️"],95:["Thunderstorm","⛈️"],
+96:["Thunderstorm with hail","⛈️"],99:["Heavy thunderstorm","⛈️"]
 };
 
 function convertTemperature(value){
-  return currentUnit === "F" ? value * 9 / 5 + 32 : value;
+return currentUnit === "F" ? value * 9 / 5 + 32 : value;
 }
 
 function formatTemperature(value){
-  if(value === null || value === undefined || !Number.isFinite(Number(value))){
-    return "--";
-  }
-  return `${Math.round(convertTemperature(Number(value)))}°${currentUnit}`;
+if(value === null || value === undefined || !Number.isFinite(Number(value)))return "--";
+return `${Math.round(convertTemperature(Number(value)))}°${currentUnit}`;
 }
 
-function formatNumber(value, digits=0){
-  if(value === null || value === undefined || !Number.isFinite(Number(value))){
-    return "--";
-  }
-  return Number(value).toFixed(digits);
+function formatNumber(value,digits=0){
+if(value === null || value === undefined || !Number.isFinite(Number(value)))return "--";
+return Number(value).toFixed(digits);
 }
 
 function formatTime(value){
-  if(!value || !value.includes("T"))return "--:--";
-  const [hours,minutes] = value.split("T")[1].split(":");
-  let hour = Number(hours);
-  const period = hour >= 12 ? "PM" : "AM";
-  hour = hour % 12 || 12;
-  return `${hour}:${minutes} ${period}`;
-}
-
-function formatHour(value){
-  if(!value || !value.includes("T"))return "--";
-  return formatTime(value);
+if(!value || !value.includes("T"))return "--:--";
+const [hours,minutes] = value.split("T")[1].split(":");
+let hour = Number(hours);
+const period = hour >= 12 ? "PM" : "AM";
+hour = hour % 12 || 12;
+return `${hour}:${minutes} ${period}`;
 }
 
 function formatDay(value){
-  const date = new Date(`${value}T12:00:00Z`);
-  return date.toLocaleDateString("en-US",{
-    weekday:"short",
-    timeZone:"UTC"
-  });
+const date = new Date(`${value}T12:00:00Z`);
+return date.toLocaleDateString("en-US",{weekday:"short",timeZone:"UTC"});
 }
 
 function getWeatherInfo(code){
-  return weatherCodes[code] || ["Unknown","🌡️"];
+return weatherCodes[code] || ["Unknown","🌡️"];
 }
 
 function uvDescription(value){
-  if(value === null || value === undefined)return "Unavailable";
-  if(value <= 2)return "Low";
-  if(value <= 5)return "Moderate";
-  if(value <= 7)return "High";
-  if(value <= 10)return "Very high";
-  return "Extreme";
+if(value === null || value === undefined)return "Unavailable";
+if(value <= 2)return "Low";
+if(value <= 5)return "Moderate";
+if(value <= 7)return "High";
+if(value <= 10)return "Very high";
+return "Extreme";
 }
 
-function createInfoCard(icon,label,value,extra=""){
-  const card = document.createElement("div");
-  card.className = "info-card";
-
-  const iconElement = document.createElement("div");
-  iconElement.className = "info-icon";
-  iconElement.textContent = icon;
-
-  const labelElement = document.createElement("div");
-  labelElement.className = "info-label";
-  labelElement.textContent = label;
-
-  const valueElement = document.createElement("div");
-  valueElement.className = "info-value";
-  valueElement.textContent = value;
-
-  card.append(iconElement,labelElement,valueElement);
-
-  if(extra){
-    const extraElement = document.createElement("div");
-    extraElement.className = "info-extra";
-    extraElement.textContent = extra;
-    card.appendChild(extraElement);
-  }
-
-  return card;
+function createInfoCard(icon,label,value){
+const card = document.createElement("div");
+card.className = "info-card";
+const iconElement = document.createElement("div");
+iconElement.className = "info-icon";
+iconElement.textContent = icon;
+const labelElement = document.createElement("div");
+labelElement.className = "info-label";
+labelElement.textContent = label;
+const valueElement = document.createElement("div");
+valueElement.className = "info-value";
+valueElement.textContent = value;
+card.append(iconElement,labelElement,valueElement);
+return card;
 }
 
 function displayCurrentWeather(){
-  if(!currentData)return;
+if(!currentData)return;
+const data = currentData;
 
-  const data = currentData;
+$("temp").textContent = formatTemperature(currentTemperature);
+unitToggle.textContent = currentUnit === "C" ? "Switch to °F" : "Switch to °C";
 
-  $("temp").textContent = formatTemperature(currentTemperature);
-  $("feels").textContent = formatTemperature(currentFeelsLike);
-  unitToggle.textContent = currentUnit === "C" ? "Switch to °F" : "Switch to °C";
+const info = getWeatherInfo(data.weather_code);
+$("icon").textContent = data.is_day ? info[1] : (data.weather_code === 0 ? "🌙" : info[1]);
+$("description").textContent = info[0];
 
-  const info = getWeatherInfo(data.weather_code);
+const direction = Number.isFinite(Number(data.wind_direction_10m)) ? `${Math.round(data.wind_direction_10m)}°` : "--";
+const details = $("currentDetails");
+details.innerHTML = "";
 
-  $("icon").textContent = data.is_day ? info[1] :
-    (data.weather_code === 0 ? "🌙" : info[1]);
-
-  $("description").textContent = info[0];
-
-  const direction = Number.isFinite(Number(data.wind_direction_10m))
-    ? `${Math.round(data.wind_direction_10m)}°`
-    : "--";
-
-  const details = $("currentDetails");
-  details.innerHTML = "";
-
-  const cards = [
-    ["🌡️","Feels Like",formatTemperature(data.apparent_temperature)],
-    ["💧","Humidity",`${formatNumber(data.relative_humidity_2m)}%`],
-    ["🌬️","Wind Speed",`${formatNumber(data.wind_speed_10m)} km/h`],
-    ["🧭","Wind Direction",direction],
-    ["💨","Wind Gusts",`${formatNumber(data.wind_gusts_10m)} km/h`],
-    ["🔵","Pressure",`${formatNumber(data.pressure_msl)} hPa`],
-    ["👁️","Visibility",`${formatNumber(data.visibility / 1000,1)} km`],
-    ["☀️","UV Index",formatNumber(data.uv_index,1)],
-    ["🌥️","Cloud Cover",`${formatNumber(data.cloud_cover)}%`],
-    ["🌡️","Dew Point",formatTemperature(data.dew_point_2m)],
-    ["🌧️","Precipitation",`${formatNumber(data.precipitation,1)} mm`],
-    ["☀️","UV Level",uvDescription(data.uv_index)]
-  ];
-
-  cards.forEach(item=>{
-    details.appendChild(createInfoCard(...item));
-  });
+const cards = [
+["🌡️","Feels Like",formatTemperature(data.apparent_temperature)],
+["💧","Humidity",`${formatNumber(data.relative_humidity_2m)}%`],
+["🌬️","Wind Speed",`${formatNumber(data.wind_speed_10m)} km/h`],
+["🧭","Wind Direction",direction],
+["💨","Wind Gusts",`${formatNumber(data.wind_gusts_10m)} km/h`],
+["🔵","Pressure",`${formatNumber(data.pressure_msl)} hPa`],
+["👁️","Visibility",`${formatNumber(data.visibility / 1000,1)} km`],
+["☀️","UV Index",formatNumber(data.uv_index,1)],
+["🌥️","Cloud Cover",`${formatNumber(data.cloud_cover)}%`],
+["🌡️","Dew Point",formatTemperature(data.dew_point_2m)],
+["🌧️","Precipitation",`${formatNumber(data.precipitation,1)} mm`],
+["☀️","UV Level",uvDescription(data.uv_index)]
+];
+cards.forEach(item=>details.appendChild(createInfoCard(...item)));
 }
 
 function displaySunTimes(){
-  if(!dailyData)return;
-  $("sunrise").textContent = formatTime(dailyData.sunrise?.[0]);
-  $("sunset").textContent = formatTime(dailyData.sunset?.[0]);
+if(!dailyData)return;
+$("sunrise").textContent = formatTime(dailyData.sunrise?.[0]);
+$("sunset").textContent = formatTime(dailyData.sunset?.[0]);
 }
 
 function displayHourlyForecast(){
-  const element = $("hourly");
-  if(!hourlyData)return;
+const element = $("hourly");
+if(!hourlyData)return;
+element.innerHTML = "";
 
-  element.innerHTML = "";
+const times = hourlyData.time || [];
+const now = currentData?.time || "";
+let startIndex = times.findIndex(time=>time >= now);
+if(startIndex < 0)startIndex = 0;
 
-  const times = hourlyData.time || [];
-  const now = currentData?.time || "";
+const endIndex = Math.min(startIndex+24,times.length);
+for(let i=startIndex;i<endIndex;i++){
+const info = getWeatherInfo(hourlyData.weather_code[i]);
+const card = document.createElement("div");
+card.className = "hour-card";
 
-  let startIndex = times.findIndex(time=>time >= now);
-  if(startIndex < 0)startIndex = 0;
+const time = document.createElement("div");
+time.className = "hour-time";
+time.textContent = formatTime(times[i]);
 
-  const endIndex = Math.min(startIndex + 24,times.length);
+const icon = document.createElement("div");
+icon.className = "hour-icon";
+icon.textContent = info[1];
 
-  for(let i=startIndex;i<endIndex;i++){
-    const info = getWeatherInfo(hourlyData.weather_code[i]);
+const temp = document.createElement("div");
+temp.className = "hour-temp";
+temp.textContent = formatTemperature(hourlyData.temperature_2m[i]);
 
-    const card = document.createElement("div");
-    card.className = "hour-card";
+const rain = document.createElement("div");
+rain.className = "hour-rain";
+rain.textContent = `💧 ${hourlyData.precipitation_probability?.[i] ?? 0}% rain`;
 
-    const time = document.createElement("div");
-    time.className = "hour-time";
-    time.textContent = formatHour(times[i]);
+const wind = document.createElement("div");
+wind.className = "hour-rain";
+wind.textContent = `🌬️ ${formatNumber(hourlyData.wind_speed_10m?.[i])} km/h`;
 
-    const icon = document.createElement("div");
-    icon.className = "hour-icon";
-    icon.textContent = info[1];
-
-    const temp = document.createElement("div");
-    temp.className = "hour-temp";
-    temp.textContent = formatTemperature(hourlyData.temperature_2m[i]);
-
-    const rain = document.createElement("div");
-    rain.className = "hour-rain";
-    rain.textContent = `💧 ${hourlyData.precipitation_probability[i] ?? 0}% rain`;
-
-    const wind = document.createElement("div");
-    wind.className = "hour-rain";
-    wind.textContent = `🌬️ ${formatNumber(hourlyData.wind_speed_10m[i])} km/h`;
-
-    card.append(time,icon,temp,rain,wind);
-    element.appendChild(card);
-  }
-
-  if(!element.children.length){
-    element.textContent = "Hourly forecast unavailable.";
-  }
+card.append(time,icon,temp,rain,wind);
+element.appendChild(card);
+}
+if(!element.children.length)element.textContent = "Hourly forecast unavailable.";
 }
 
 function displayForecast(){
-  const element = $("forecast");
-  if(!dailyData)return;
+const element = $("forecast");
+if(!dailyData)return;
+element.innerHTML = "";
 
-  element.innerHTML = "";
+for(let i=1;i<=5;i++){
+if(!dailyData.time?.[i])continue;
+const info = getWeatherInfo(dailyData.weather_code[i]);
+const card = document.createElement("div");
+card.className = "forecast-day";
 
-  for(let i=1;i<=5;i++){
-    const info = getWeatherInfo(dailyData.weather_code[i]);
+const day = document.createElement("div");
+day.className = "day";
+day.textContent = formatDay(dailyData.time[i]);
 
-    const card = document.createElement("div");
-    card.className = "forecast-day";
+const icon = document.createElement("div");
+icon.className = "forecast-icon";
+icon.textContent = info[1];
 
-    const day = document.createElement("div");
-    day.className = "day";
-    day.textContent = formatDay(dailyData.time[i]);
+const max = document.createElement("div");
+max.className = "max";
+max.textContent = formatTemperature(dailyData.temperature_2m_max[i]);
 
-    const icon = document.createElement("div");
-    icon.className = "forecast-icon";
-    icon.textContent = info[1];
+const min = document.createElement("div");
+min.className = "min";
+min.textContent = formatTemperature(dailyData.temperature_2m_min[i]);
 
-    const max = document.createElement("div");
-    max.className = "max";
-    max.textContent = formatTemperature(dailyData.temperature_2m_max[i]);
+const rain = document.createElement("div");
+rain.className = "forecast-rain";
+rain.textContent = `💧 ${dailyData.precipitation_probability_max?.[i] ?? 0}%`;
 
-    const min = document.createElement("div");
-    min.className = "min";
-    min.textContent = formatTemperature(dailyData.temperature_2m_min[i]);
-
-    const rain = document.createElement("div");
-    rain.className = "forecast-rain";
-    rain.textContent = `💧 ${dailyData.precipitation_probability_max?.[i] ?? 0}%`;
-
-    card.append(day,icon,max,min,rain);
-    element.appendChild(card);
-  }
+card.append(day,icon,max,min,rain);
+element.appendChild(card);
+}
 }
 
 function displayAll(){
-  displayCurrentWeather();
-  displaySunTimes();
-  displayHourlyForecast();
-  displayForecast();
+displayCurrentWeather();
+displaySunTimes();
+displayHourlyForecast();
+displayForecast();
 }
 
 async function loadWeather(latitude,longitude,locationName){
-  const requestId = ++weatherRequest;
+const requestId = ++weatherRequest;
+message.textContent = "Loading weather...";
+message.className = "message";
+$("currentDetails").innerHTML = '<p class="loading">Loading weather details...</p>';
+$("hourly").innerHTML = '<p class="loading">Loading hourly forecast...</p>';
+$("forecast").innerHTML = '<p class="loading">Loading forecast...</p>';
 
-  message.textContent = "Loading weather...";
-  $("currentDetails").innerHTML = '<p class="loading">Loading weather details...</p>';
-  $("hourly").innerHTML = '<p class="loading">Loading hourly forecast...</p>';
-  $("forecast").innerHTML = '<p class="loading">Loading forecast...</p>';
+try{
+const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl,cloud_cover,dew_point_2m,visibility,uv_index&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&forecast_days=6&forecast_hours=24&timezone=auto`;
 
-  try{
-    const url =
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}`+
-      `&longitude=${longitude}`+
-      `&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl,surface_pressure,cloud_cover,dew_point_2m,visibility,uv_index`+
-      `&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,precipitation_probability,precipitation,weather_code,cloud_cover,visibility,wind_speed_10m,wind_direction_10m,wind_gusts_10m,uv_index`+
-      `&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,uv_index_max,wind_speed_10m_max`+
-      `&forecast_days=6&forecast_hours=24&timezone=auto`;
+const response = await fetch(url);
+if(!response.ok)throw new Error("Could not get weather data.");
+const data = await response.json();
+if(requestId !== weatherRequest)return false;
+if(!data.current || !data.daily || !data.hourly)throw new Error("Weather data is incomplete.");
 
-    const response = await fetch(url);
-    if(!response.ok)throw new Error("Could not get weather data.");
+currentData = data.current;
+dailyData = data.daily;
+hourlyData = data.hourly;
+currentTemperature = data.current.temperature_2m;
+$("city").textContent = locationName;
 
-    const data = await response.json();
+displayAll();
+message.textContent = "Weather updated successfully!";
+message.className = "message good";
+return true;
 
-    if(requestId !== weatherRequest)return false;
-
-    if(!data.current || !data.daily || !data.hourly){
-      throw new Error("Weather data is incomplete.");
-    }
-
-    currentData = data.current;
-    dailyData = data.daily;
-    hourlyData = data.hourly;
-
-    currentTemperature = data.current.temperature_2m;
-    currentFeelsLike = data.current.apparent_temperature;
-
-    $("city").textContent = locationName;
-
-    displayAll();
-
-    message.textContent = "Weather updated successfully!";
-    message.className = "message good";
-
-    return true;
-
-  }catch(error){
-    if(requestId !== weatherRequest)return false;
-
-    message.textContent = error.message || "Something went wrong.";
-    message.className = "message warning";
-
-    $("currentDetails").textContent = "Weather details unavailable.";
-    $("hourly").textContent = "Hourly forecast unavailable.";
-    $("forecast").textContent = "Forecast unavailable. Try again.";
-
-    return false;
-  }
+}catch(error){
+if(requestId !== weatherRequest)return false;
+message.textContent = error.message || "Something went wrong.";
+message.className = "message warning";
+$("currentDetails").textContent = "Weather details unavailable.";
+$("hourly").textContent = "Hourly forecast unavailable.";
+$("forecast").textContent = "Forecast unavailable. Try again.";
+return false;
+}
 }
 
 function getPlaceLabel(place){
-  return [place.name,place.admin1,place.country]
-    .filter(Boolean)
-    .filter((value,index,array)=>array.indexOf(value)===index)
-    .join(", ");
+return [place.name,place.admin1,place.country].filter(Boolean).filter((value,index,array)=>array.indexOf(value)===index).join(", ");
 }
 
 function hideSuggestions(){
-  suggestions.classList.add("hidden");
-  suggestions.innerHTML = "";
-  suggestionResults = [];
-  activeSuggestion = -1;
+suggestions.classList.add("hidden");
+suggestions.innerHTML = "";
+suggestionResults = [];
+activeSuggestion = -1;
 }
 
 function updateActiveSuggestion(){
-  const buttons = suggestions.querySelectorAll(".suggestion");
-  buttons.forEach((button,index)=>{
-    button.classList.toggle("active",index===activeSuggestion);
-  });
+const buttons = suggestions.querySelectorAll(".suggestion");
+buttons.forEach((button,index)=>button.classList.toggle("active",index===activeSuggestion));
 }
 
 async function searchSuggestions(query){
-  const requestId = ++suggestionRequest;
+const requestId = ++suggestionRequest;
+if(query.length<2){hideSuggestions();return;}
 
-  if(query.length < 2){
-    hideSuggestions();
-    return;
-  }
+suggestions.classList.remove("hidden");
+suggestions.innerHTML = '<div class="suggestion-message">Searching...</div>';
 
-  suggestions.classList.remove("hidden");
-  suggestions.innerHTML = '<div class="suggestion-message">Searching...</div>';
+try{
+const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=6&language=en&format=json`;
+const response = await fetch(url);
+if(!response.ok)throw new Error("Search failed");
+const data = await response.json();
+if(requestId !== suggestionRequest)return;
 
-  try{
-    const url =
-      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}`+
-      `&count=6&language=en&format=json`;
+suggestionResults = data.results || [];
+activeSuggestion = -1;
+suggestions.innerHTML = "";
 
-    const response = await fetch(url);
-    if(!response.ok)throw new Error("Search failed");
+if(!suggestionResults.length){
+suggestions.innerHTML = '<div class="suggestion-message">No matching cities found.</div>';
+suggestions.classList.remove("hidden");
+return;
+}
 
-    const data = await response.json();
-
-    if(requestId !== suggestionRequest)return;
-
-    suggestionResults = data.results || [];
-    activeSuggestion = -1;
-    suggestions.innerHTML = "";
-
-    if(!suggestionResults.length){
-      suggestions.innerHTML =
-        '<div class="suggestion-message">No matching cities found.</div>';
-      suggestions.classList.remove("hidden");
-      return;
-    }
-
-    suggestionResults.forEach((place,index)=>{
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "suggestion";
-
-      const name = document.createElement("span");
-      name.textContent = place.name;
-
-      const details = document.createElement("small");
-      details.textContent = [place.admin1,place.country]
-        .filter(Boolean).join(", ");
-
-      button.append(name,details);
-      button.addEventListener("click",()=>selectSuggestion(index));
-      suggestions.appendChild(button);
-    });
-
-    suggestions.classList.remove("hidden");
-
-  }catch(error){
-    if(requestId !== suggestionRequest)return;
-    suggestions.innerHTML =
-      '<div class="suggestion-message">Could not load suggestions.</div>';
-    suggestions.classList.remove("hidden");
-  }
+suggestionResults.forEach((place,index)=>{
+const button = document.createElement("button");
+button.type = "button";
+button.className = "suggestion";
+const name = document.createElement("span");
+name.textContent = place.name;
+const details = document.createElement("small");
+details.textContent = [place.admin1,place.country].filter(Boolean).join(", ");
+button.append(name,details);
+button.addEventListener("click",()=>selectSuggestion(index));
+suggestions.appendChild(button);
+});
+suggestions.classList.remove("hidden");
+}catch(error){
+if(requestId !== suggestionRequest)return;
+suggestions.innerHTML = '<div class="suggestion-message">Could not load suggestions.</div>';
+suggestions.classList.remove("hidden");
+}
 }
 
 async function selectSuggestion(index){
-  const place = suggestionResults[index];
-  if(!place)return;
-
-  clearTimeout(searchTimer);
-  input.value = place.name;
-  hideSuggestions();
-
-  const success = await loadWeather(
-    place.latitude,
-    place.longitude,
-    getPlaceLabel(place)
-  );
-
-  if(success)localStorage.setItem("lastCity",place.name);
+const place = suggestionResults[index];
+if(!place)return;
+clearTimeout(searchTimer);
+input.value = place.name;
+hideSuggestions();
+const success = await loadWeather(place.latitude,place.longitude,getPlaceLabel(place));
+if(success)localStorage.setItem("lastCity",place.name);
 }
 
 async function getWeather(cityName){
-  if(!cityName.trim())return;
+if(!cityName.trim())return;
+hideSuggestions();
+suggestionRequest++;
+message.textContent = "Searching for city...";
+message.className = "message";
 
-  hideSuggestions();
-  suggestionRequest++;
+try{
+const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`;
+const response = await fetch(url);
+if(!response.ok)throw new Error("Network error");
+const data = await response.json();
+if(!data.results?.length)throw new Error("City not found. Try another name.");
 
-  message.textContent = "Searching for city...";
-  message.className = "message";
-
-  try{
-    const url =
-      `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}`+
-      `&count=1&language=en&format=json`;
-
-    const response = await fetch(url);
-    if(!response.ok)throw new Error("Network error");
-
-    const data = await response.json();
-
-    if(!data.results?.length){
-      throw new Error("City not found. Try another name.");
-    }
-
-    const place = data.results[0];
-
-    const success = await loadWeather(
-      place.latitude,
-      place.longitude,
-      getPlaceLabel(place)
-    );
-
-    if(success)localStorage.setItem("lastCity",place.name);
-
-  }catch(error){
-    message.textContent = error.message || "Something went wrong.";
-    message.className = "message warning";
-  }
+const place = data.results[0];
+const success = await loadWeather(place.latitude,place.longitude,getPlaceLabel(place));
+if(success)localStorage.setItem("lastCity",place.name);
+}catch(error){
+message.textContent = error.message || "Something went wrong.";
+message.className = "message warning";
+}
 }
 
 function getMyLocation(){
-  hideSuggestions();
+hideSuggestions();
+if(!navigator.geolocation){
+message.textContent = "Geolocation is not supported by your browser.";
+return;
+}
 
-  if(!navigator.geolocation){
-    message.textContent = "Geolocation is not supported by your browser.";
-    return;
-  }
+locationButton.disabled = true;
+locationButton.textContent = "Getting location...";
+message.textContent = "Please allow location access.";
 
-  locationButton.disabled = true;
-  locationButton.textContent = "Getting location...";
-  message.textContent = "Please allow location access.";
-
-  navigator.geolocation.getCurrentPosition(
-    async position=>{
-      const {latitude,longitude} = position.coords;
-
-      await loadWeather(latitude,longitude,"Your Current Location");
-
-      locationButton.disabled = false;
-      locationButton.textContent = "📍 Use My Location";
-    },
-    error=>{
-      locationButton.disabled = false;
-      locationButton.textContent = "📍 Use My Location";
-
-      if(error.code === 1){
-        message.textContent = "Location permission denied. Allow it in browser settings.";
-      }else if(error.code === 2){
-        message.textContent = "Your location is currently unavailable.";
-      }else{
-        message.textContent = "Location request timed out. Try again.";
-      }
-    },
-    {enableHighAccuracy:false,timeout:15000,maximumAge:300000}
-  );
+navigator.geolocation.getCurrentPosition(async position=>{
+const {latitude,longitude} = position.coords;
+await loadWeather(latitude,longitude,"Your Current Location");
+locationButton.disabled = false;
+locationButton.textContent = "📍 Use My Location";
+},error=>{
+locationButton.disabled = false;
+locationButton.textContent = "📍 Use My Location";
+if(error.code===1)message.textContent = "Location permission denied. Allow it in browser settings.";
+else if(error.code===2)message.textContent = "Your location is currently unavailable.";
+else message.textContent = "Location request timed out. Try again.";
+},{enableHighAccuracy:false,timeout:15000,maximumAge:300000});
 }
 
 input.addEventListener("input",()=>{
-  clearTimeout(searchTimer);
-
-  const query = input.value.trim();
-
-  if(query.length < 2){
-    suggestionRequest++;
-    hideSuggestions();
-    return;
-  }
-
-  searchTimer = setTimeout(()=>searchSuggestions(query),300);
+clearTimeout(searchTimer);
+const query = input.value.trim();
+if(query.length<2){
+suggestionRequest++;
+hideSuggestions();
+return;
+}
+searchTimer = setTimeout(()=>searchSuggestions(query),300);
 });
 
 input.addEventListener("keydown",event=>{
-  if(suggestions.classList.contains("hidden"))return;
-
-  if(event.key === "ArrowDown"){
-    event.preventDefault();
-    activeSuggestion = Math.min(
-      activeSuggestion+1,
-      suggestionResults.length-1
-    );
-    updateActiveSuggestion();
-  }
-
-  if(event.key === "ArrowUp"){
-    event.preventDefault();
-    activeSuggestion = Math.max(activeSuggestion-1,0);
-    updateActiveSuggestion();
-  }
-
-  if(event.key === "Enter" && activeSuggestion >= 0){
-    event.preventDefault();
-    selectSuggestion(activeSuggestion);
-  }
-
-  if(event.key === "Escape")hideSuggestions();
+if(suggestions.classList.contains("hidden"))return;
+if(event.key==="ArrowDown"){
+event.preventDefault();
+activeSuggestion = Math.min(activeSuggestion+1,suggestionResults.length-1);
+updateActiveSuggestion();
+}
+if(event.key==="ArrowUp"){
+event.preventDefault();
+activeSuggestion = Math.max(activeSuggestion-1,0);
+updateActiveSuggestion();
+}
+if(event.key==="Enter" && activeSuggestion>=0){
+event.preventDefault();
+selectSuggestion(activeSuggestion);
+}
+if(event.key==="Escape")hideSuggestions();
 });
 
 document.addEventListener("click",event=>{
-  if(!form.contains(event.target))hideSuggestions();
+if(!form.contains(event.target))hideSuggestions();
 });
 
 form.addEventListener("submit",event=>{
-  event.preventDefault();
-  clearTimeout(searchTimer);
-  getWeather(input.value.trim());
+event.preventDefault();
+clearTimeout(searchTimer);
+getWeather(input.value.trim());
 });
 
 unitToggle.addEventListener("click",()=>{
-  currentUnit = currentUnit === "C" ? "F" : "C";
-  localStorage.setItem("temperatureUnit",currentUnit);
-  displayAll();
+currentUnit = currentUnit==="C" ? "F" : "C";
+localStorage.setItem("temperatureUnit",currentUnit);
+displayAll();
 });
 
 locationButton.addEventListener("click",getMyLocation);
-
-unitToggle.textContent =
-  currentUnit === "C" ? "Switch to °F" : "Switch to °C";
+unitToggle.textContent = currentUnit==="C" ? "Switch to °F" : "Switch to °C";
 
 const lastCity = localStorage.getItem("lastCity");
-
 if(lastCity){
-  input.value = lastCity;
-  getWeather(lastCity);
+input.value = lastCity;
+getWeather(lastCity);
 }
 </script>
 </body>
