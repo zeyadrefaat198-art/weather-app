@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,191 +13,633 @@ body{min-height:100vh;padding:22px 14px;font-family:Arial,sans-serif;color:#fff;
 body.night{background:linear-gradient(135deg,#050817,#17264b,#35466c)}
 body.day{background:linear-gradient(135deg,#075985,#168aad,#62c6d6)}
 .app{width:100%;max-width:960px;margin:auto;padding:26px;border:1px solid var(--line);border-radius:24px;background:#ffffff12;backdrop-filter:blur(14px);box-shadow:0 18px 50px #00152c55}
-header{text-align:center;margin-bottom:22px}h1{font-size:30px;margin-bottom:7px}.subtitle{color:var(--muted)}
-.search{display:flex;gap:8px;position:relative}input{min-width:0;flex:1;padding:14px;border:0;border-radius:12px;font-size:15px;outline:none}
-button{padding:13px 16px;border:0;border-radius:12px;background:var(--accent);color:#102b46;font-weight:bold;cursor:pointer}button:disabled{opacity:.6}
-.controls{display:flex;gap:9px;margin-top:10px}.controls button{flex:1}.secondary{background:#ffffff24;color:white;border:1px solid #ffffff66}
-.suggestions{position:absolute;top:calc(100% + 7px);left:0;right:0;z-index:5;background:white;color:#123;border-radius:12px;overflow:hidden;box-shadow:0 8px 25px #00152c55}.hidden{display:none!important}
-.suggestion{display:block;width:100%;text-align:left;background:white;color:#123;border-radius:0;font-weight:normal}.suggestion small{display:block;color:#567;margin-top:4px}
-.weather{text-align:center;margin-top:25px}.icon{font-size:76px;margin:8px}.temp{font-size:60px;font-weight:bold}.description{font-size:20px;margin:7px}.city{font-size:23px;color:#ffdf9a;margin-top:10px}
-.section{margin-top:26px;padding-top:21px;border-top:1px solid var(--line)}.section h2{font-size:20px;margin-bottom:14px}.sub{font-size:13px;color:var(--muted);margin-top:-7px;margin-bottom:13px}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}.card{min-width:0;padding:14px 8px;border-radius:14px;background:var(--glass);text-align:center}.card .ico{font-size:23px;margin-bottom:7px}.card .label{font-size:12px;color:var(--muted);margin-bottom:7px}.card .value{font-size:17px;font-weight:bold;overflow-wrap:anywhere}
-.sun-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.sun{padding:16px;border-radius:14px;background:var(--glass);text-align:center}.sun strong{display:block;font-size:20px;margin-top:6px}
-.alert{padding:14px 16px;border-radius:14px;margin-top:18px;background:#ffffff20;border:1px solid var(--line);line-height:1.5}.alert.rain{background:#8b451f66;border-color:#ffd18a}.alert.clear{background:#176b4c66;border-color:#9ce7c4}
-.chart-wrap{padding:12px;border-radius:15px;background:var(--glass);overflow:hidden}.chart-wrap svg{width:100%;height:auto;display:block}.chart-note{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
-.hourly{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.hour{padding:12px 4px;border-radius:13px;background:var(--glass);text-align:center}.hour small{display:block;color:var(--muted);font-size:11px}.hour .ico{font-size:22px;margin:6px}.hour b{font-size:15px}
-.forecast{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.day-card{padding:13px 4px;border-radius:13px;background:var(--glass);text-align:center}.day-card small{color:var(--muted);font-size:11px}.day-card .ico{font-size:25px;margin:7px}.day-card b{font-size:14px}.day-card span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
-.message{text-align:center;min-height:20px;margin-top:17px;color:#ffe3a8}.good{color:#b8f5cf}.error{color:#ffd0c9}footer{text-align:center;margin-top:25px;color:var(--muted);font-size:12px}
-@media(max-width:600px){.app{padding:19px 12px}h1{font-size:26px}.temp{font-size:52px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hourly{grid-template-columns:repeat(3,minmax(0,1fr))}.forecast{gap:5px}.day-card{padding:11px 2px}.controls{flex-direction:column}.search button{padding:12px 10px}}
-#weatherMap{height:320px;border-radius:15px;overflow:hidden;border:1px solid var(--line);z-index:1}.map-legend{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}.leaflet-popup-content{color:#17324d;font-weight:600}
+header{text-align:center;margin-bottom:22px}
+h1{font-size:30px;margin-bottom:7px}
+.subtitle{color:var(--muted)}
+.search{display:flex;gap:8px;position:relative}
+input{min-width:0;flex:1;padding:14px;border:0;border-radius:12px;font-size:15px;outline:none}
+button{padding:13px 16px;border:0;border-radius:12px;background:var(--accent);color:#102b46;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.6}
+.controls{display:flex;gap:9px;margin-top:10px}
+.controls button{flex:1}
+.secondary{background:#ffffff24;color:white;border:1px solid #ffffff66}
+.suggestions{position:absolute;top:calc(100% + 7px);left:0;right:0;z-index:5;background:white;color:#123;border-radius:12px;overflow:hidden;box-shadow:0 8px 25px #00152c55}
+.hidden{display:none!important}
+.suggestion{display:block;width:100%;text-align:left;background:white;color:#123;border-radius:0;font-weight:normal}
+.suggestion small{display:block;color:#567;margin-top:4px}
+.weather{text-align:center;margin-top:25px}
+.icon{font-size:76px;margin:8px}
+.temp{font-size:60px;font-weight:bold}
+.description{font-size:20px;margin:7px}
+.city{font-size:23px;color:#ffdf9a;margin-top:10px}
+.section{margin-top:26px;padding-top:21px;border-top:1px solid var(--line)}
+.section h2{font-size:20px;margin-bottom:14px}
+.sub{font-size:13px;color:var(--muted);margin-top:-7px;margin-bottom:13px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.card{min-width:0;padding:14px 8px;border-radius:14px;background:var(--glass);text-align:center}
+.card .ico{font-size:23px;margin-bottom:7px}
+.card .label{font-size:12px;color:var(--muted);margin-bottom:7px}
+.card .value{font-size:17px;font-weight:bold;overflow-wrap:anywhere}
+.sun-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.sun{padding:16px;border-radius:14px;background:var(--glass);text-align:center}
+.sun strong{display:block;font-size:20px;margin-top:6px}
+.alert{padding:14px 16px;border-radius:14px;margin-top:18px;background:#ffffff20;border:1px solid var(--line);line-height:1.5}
+.alert.rain{background:#8b451f66;border-color:#ffd18a}
+.alert.clear{background:#176b4c66;border-color:#9ce7c4}
+.chart-wrap{padding:12px;border-radius:15px;background:var(--glass);overflow:hidden}
+.chart-wrap svg{width:100%;height:auto;display:block}
+.chart-note{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+.hourly{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.hour{padding:12px 4px;border-radius:13px;background:var(--glass);text-align:center}
+.hour small{display:block;color:var(--muted);font-size:11px}
+.hour .ico{font-size:22px;margin:6px}
+.hour b{font-size:15px}
+.forecast{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.day-card{padding:13px 4px;border-radius:13px;background:var(--glass);text-align:center}
+.day-card small{color:var(--muted);font-size:11px}
+.day-card .ico{font-size:25px;margin:7px}
+.day-card b{font-size:14px}
+.day-card span{display:block;color:var(--muted);font-size:12px;margin-top:4px}
+.message{text-align:center;min-height:20px;margin-top:17px;color:#ffe3a8}
+.good{color:#b8f5cf}
+.error{color:#ffd0c9}
+footer{text-align:center;margin-top:25px;color:var(--muted);font-size:12px}
+@media(max-width:600px){
+.app{padding:19px 12px}
+h1{font-size:26px}
+.temp{font-size:52px}
+.grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.hourly{grid-template-columns:repeat(3,minmax(0,1fr))}
+.forecast{gap:5px}
+.day-card{padding:11px 2px}
+.controls{flex-direction:column}
+.search button{padding:12px 10px}
+}
+#weatherMap{height:320px;border-radius:15px;overflow:hidden;border:1px solid var(--line);z-index:1}
+.map-legend{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5}
+.leaflet-popup-content{color:#17324d;font-weight:600}
 @media(max-width:600px){#weatherMap{height:280px}}
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
 <main class="app">
-<header><h1>Weather App V4</h1><p class="subtitle">Local weather map and forecast-based alerts</p></header>
+<header>
+<h1>Weather App V4</h1>
+<p class="subtitle">Local weather map and forecast-based alerts</p>
+</header>
+
 <form class="search" id="searchForm" autocomplete="off">
 <input id="cityInput" placeholder="Enter a city..." aria-label="City name" required>
-<button id="searchButton">Search</button><div id="suggestions" class="suggestions hidden"></div>
+<button id="searchButton">Search</button>
+<div id="suggestions" class="suggestions hidden"></div>
 </form>
+
 <div class="controls">
 <button class="secondary" type="button" id="locationButton">📍 Use My Location</button>
 <button class="secondary" type="button" id="portFouadButton">📍 Port Fouad</button>
 <button class="secondary" type="button" id="unitToggle">Switch to °F</button>
 </div>
+
 <section class="weather">
-<div class="icon" id="icon">🌤️</div><div class="temp" id="temp">--°C</div>
-<div class="description" id="description">Search for a city</div><div class="city" id="city">Your City</div>
+<div class="icon" id="icon">🌤️</div>
+<div class="temp" id="temp">--°C</div>
+<div class="description" id="description">Search for a city</div>
+<div class="city" id="city">Your City</div>
 </section>
+
 <div id="rainAlert" class="alert">🌦️ Search for a city to check the rain forecast.</div>
 <div id="severeAlert" class="alert" aria-live="polite">⚠️ Severe-weather checks will appear here.</div>
-<section class="section"><h2>Current Weather</h2><div class="grid" id="details"><div class="card">Weather details will appear here.</div></div></section>
-<section class="section"><h2>Weather Around You</h2><div id="weatherMap" role="application" aria-label="Interactive map showing nearby temperatures"></div><p class="map-legend">Map markers show forecast temperatures at nearby points. Select a marker for its temperature. Map tiles © OpenStreetMap contributors.</p></section>
-<section class="section"><h2>Sunrise & Sunset</h2><div class="sun-grid"><div class="sun">🌅 Sunrise<strong id="sunrise">--:--</strong></div><div class="sun">🌇 Sunset<strong id="sunset">--:--</strong></div></div></section>
-<section class="section"><h2>Temperature Trend</h2><p class="sub">Temperature during the next 24 hours</p><div class="chart-wrap" id="chart"><p>Search for a city to see the chart.</p></div></section>
-<section class="section"><h2>Next 24 Hours</h2><div class="hourly" id="hourly"><p>Hourly forecast will appear here.</p></div></section>
-<section class="section"><h2>5-Day Forecast</h2><div class="forecast" id="forecast"><p>Forecast will appear here.</p></div></section>
+
+<section class="section">
+<h2>Current Weather</h2>
+<div class="grid" id="details">
+<div class="card">Weather details will appear here.</div>
+</div>
+</section>
+
+<section class="section">
+<h2>Weather Around You</h2>
+<div id="weatherMap" role="application" aria-label="Interactive map showing nearby temperatures"></div>
+<p class="map-legend">Map markers show forecast temperatures at nearby points. Select a marker for its temperature. Map tiles © OpenStreetMap contributors.</p>
+</section>
+
+<section class="section">
+<h2>Sunrise & Sunset</h2>
+<div class="sun-grid">
+<div class="sun">🌅 Sunrise<strong id="sunrise">--:--</strong></div>
+<div class="sun">🌇 Sunset<strong id="sunset">--:--</strong></div>
+</div>
+</section>
+
+<section class="section">
+<h2>Temperature Trend</h2>
+<p class="sub">Temperature during the next 24 hours</p>
+<div class="chart-wrap" id="chart"><p>Search for a city to see the chart.</p></div>
+</section>
+
+<section class="section">
+<h2>Next 24 Hours</h2>
+<div class="hourly" id="hourly"><p>Hourly forecast will appear here.</p></div>
+</section>
+
+<section class="section">
+<h2>5-Day Forecast</h2>
+<div class="forecast" id="forecast"><p>Forecast will appear here.</p></div>
+</section>
+
 <p class="message" id="message" aria-live="polite"></p>
 <footer>Forecast-based alerts · Not an official emergency-warning service</footer>
 </main>
+
 <script>
 const $=id=>document.getElementById(id);
 const form=$("searchForm"),input=$("cityInput"),suggestions=$("suggestions"),message=$("message");
+
 let unit=localStorage.getItem("temperatureUnit")||"C",weather=null,hourly=null,daily=null;
 let suggestionList=[],suggestionTimer=null,suggestionVersion=0,weatherVersion=0;
 let weatherMap=null,mapLayer=null,mapRequestVersion=0,lastCoords=null;
-const codes={0:["Clear sky","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],45:["Fog","🌫️"],48:["Fog","🌫️"],51:["Drizzle","🌦️"],53:["Drizzle","🌦️"],55:["Heavy drizzle","🌧️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],61:["Light rain","🌦️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],66:["Freezing rain","🌧️"],67:["Heavy freezing rain","🌧️"],71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],77:["Snow grains","🌨️"],80:["Showers","🌦️"],81:["Showers","🌧️"],82:["Heavy showers","⛈️"],85:["Snow showers","🌨️"],86:["Heavy snow showers","❄️"],95:["Thunderstorm","⛈️"],96:["Thunderstorm","⛈️"],99:["Heavy thunderstorm","⛈️"]};
+
+const codes={
+0:["Clear sky","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],
+45:["Fog","🌫️"],48:["Fog","🌫️"],51:["Drizzle","🌦️"],53:["Drizzle","🌦️"],
+55:["Heavy drizzle","🌧️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],
+61:["Light rain","🌦️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],
+66:["Freezing rain","🌧️"],67:["Heavy freezing rain","🌧️"],
+71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],
+77:["Snow grains","🌨️"],80:["Showers","🌦️"],81:["Showers","🌧️"],
+82:["Heavy showers","⛈️"],85:["Snow showers","🌨️"],86:["Heavy snow showers","❄️"],
+95:["Thunderstorm","⛈️"],96:["Thunderstorm","⛈️"],99:["Heavy thunderstorm","⛈️"]
+};
+
 const info=code=>codes[code]||["Unknown","🌡️"];
+
 const temp=v=>v==null||!Number.isFinite(Number(v))?"--":`${Math.round(unit==="F"?v*9/5+32:v)}°${unit}`;
+
 const num=(v,d=0)=>v==null||!Number.isFinite(Number(v))?"--":Number(v).toFixed(d);
+
 const time=s=>s&&s.includes("T")?new Date(s).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"--:--";
+
 const day=s=>new Date(s+"T12:00:00Z").toLocaleDateString("en-US",{weekday:"short",timeZone:"UTC"});
-function setMessage(text,kind=""){message.textContent=text;message.className="message "+kind}
-function card(icon,label,value){const d=document.createElement("div");d.className="card";d.innerHTML=`<div class="ico">${icon}</div><div class="label"></div><div class="value"></div>`;d.querySelector(".label").textContent=label;d.querySelector(".value").textContent=value;return d}
+
+function setMessage(text,kind=""){
+message.textContent=text;
+message.className="message "+kind;
+}
+
+function card(icon,label,value){
+const d=document.createElement("div");
+d.className="card";
+d.innerHTML=`<div class="ico">${icon}</div><div class="label"></div><div class="value"></div>`;
+d.querySelector(".label").textContent=label;
+d.querySelector(".value").textContent=value;
+return d;
+}
+
 function render(){
 if(!weather)return;
+
 $("temp").textContent=temp(weather.temperature_2m);
 $("icon").textContent=weather.is_day?info(weather.weather_code)[1]:(weather.weather_code===0?"🌙":info(weather.weather_code)[1]);
 $("description").textContent=info(weather.weather_code)[0];
 $("unitToggle").textContent=unit==="C"?"Switch to °F":"Switch to °C";
-document.body.classList.toggle("night",!weather.is_day);document.body.classList.toggle("day",!!weather.is_day);
-const d=$("details");d.innerHTML="";
+
+document.body.classList.toggle("night",!weather.is_day);
+document.body.classList.toggle("day",!!weather.is_day);
+
+const d=$("details");
+d.innerHTML="";
+
 [
-["🌡️","Feels Like",temp(weather.apparent_temperature)],["💧","Humidity",num(weather.relative_humidity_2m)+"%"],
-["🌬️","Wind",num(weather.wind_speed_10m)+" km/h"],["🧭","Wind Direction",num(weather.wind_direction_10m)+"°"],
-["💨","Wind Gusts",num(weather.wind_gusts_10m)+" km/h"],["🔵","Pressure",num(weather.pressure_msl)+" hPa"],
-["👁️","Visibility",num(weather.visibility/1000,1)+" km"],["☀️","UV Index",num(weather.uv_index,1)],
-["🌥️","Cloud Cover",num(weather.cloud_cover)+"%"],["🌡️","Dew Point",temp(weather.dew_point_2m)],
+["🌡️","Feels Like",temp(weather.apparent_temperature)],
+["💧","Humidity",num(weather.relative_humidity_2m)+"%"],
+["🌬️","Wind",num(weather.wind_speed_10m)+" km/h"],
+["🧭","Wind Direction",num(weather.wind_direction_10m)+"°"],
+["💨","Wind Gusts",num(weather.wind_gusts_10m)+" km/h"],
+["🔵","Pressure",num(weather.pressure_msl)+" hPa"],
+["👁️","Visibility",num(weather.visibility/1000,1)+" km"],
+["☀️","UV Index",num(weather.uv_index,1)],
+["🌥️","Cloud Cover",num(weather.cloud_cover)+"%"],
+["🌡️","Dew Point",temp(weather.dew_point_2m)],
 ["🌧️","Precipitation",num(weather.precipitation,1)+" mm"]
 ].forEach(x=>d.appendChild(card(...x)));
-$("sunrise").textContent=time(daily.sunrise?.[0]);$("sunset").textContent=time(daily.sunset?.[0]);
-renderRain();renderSevereAlerts();renderChart();renderHourly();renderDays();if(lastCoords)renderWeatherMap(lastCoords.lat,lastCoords.lon);
+
+$("sunrise").textContent=time(daily.sunrise?.[0]);
+$("sunset").textContent=time(daily.sunset?.[0]);
+
+renderRain();
+renderSevereAlerts();
+renderChart();
+renderHourly();
+renderDays();
+
+if(lastCoords)renderWeatherMap(lastCoords.lat,lastCoords.lon);
 }
+
 function renderRain(){
-const p=hourly.precipitation_probability||[],rain=hourly.precipitation||[];
+const p=hourly.precipitation_probability||[];
+const rain=hourly.precipitation||[];
 const max=p.slice(0,24).reduce((a,b)=>Math.max(a,b||0),0);
 const total=rain.slice(0,24).reduce((a,b)=>a+(b||0),0);
-const box=$("rainAlert");box.className="alert "+(max>=40||total>0?"rain":"clear");
-box.textContent=max>=40||total>0?`🌧️ Rain alert: precipitation chance may reach ${max}% in the next 24 hours. Expected precipitation total: ${num(total,1)} mm.`:`☀️ No significant rain signal in the next 24 hours. Highest precipitation chance: ${max}%.`;
+
+const box=$("rainAlert");
+box.className="alert "+(max>=40||total>0?"rain":"clear");
+
+box.textContent=max>=40||total>0
+?`🌧️ Rain alert: precipitation chance may reach ${max}% in the next 24 hours. Expected precipitation total: ${num(total,1)} mm.`
+:`☀️ No significant rain signal in the next 24 hours. Highest precipitation chance: ${max}%.`;
 }
 
 function renderSevereAlerts(){
 const box=$("severeAlert");
-const codes=hourly.weather_code||[],gusts=hourly.wind_gusts_10m||[],winds=hourly.wind_speed_10m||[],uv=hourly.uv_index||[],visibility=hourly.visibility||[];
+const codes=hourly.weather_code||[];
+const gusts=hourly.wind_gusts_10m||[];
+const winds=hourly.wind_speed_10m||[];
+const uv=hourly.uv_index||[];
+const visibility=hourly.visibility||[];
+
 const alerts=[];
+
 const thunder=codes.slice(0,24).some(c=>[95,96,99].includes(c));
 const heavyRain=codes.slice(0,24).some(c=>[65,82].includes(c));
+
 const maxGust=Math.max(0,...gusts.slice(0,24).map(v=>Number(v)||0));
 const maxWind=Math.max(0,...winds.slice(0,24).map(v=>Number(v)||0));
 const maxUv=Math.max(0,...uv.slice(0,24).map(v=>Number(v)||0));
-const minVisibility=visibility.length?Math.min(...visibility.slice(0,24).map(v=>Number(v)||0)):Infinity;
+
+const minVisibility=visibility.length
+?Math.min(...visibility.slice(0,24).map(v=>Number(v)||0))
+:Infinity;
+
 if(thunder)alerts.push("Thunderstorm conditions appear in the next 24 hours.");
 if(heavyRain)alerts.push("Heavy rain or intense showers appear in the forecast.");
-if(maxGust>=60||maxWind>=45)alerts.push(`Strong wind signal: gusts up to ${Math.round(maxGust)} km/h.`);
-if(minVisibility<1000)alerts.push("Low visibility may occur.");
-if(maxUv>=8)alerts.push(`Very high UV index may reach ${Math.round(maxUv)}. Limit prolonged midday sun exposure.`);
+
+if(maxGust>=60||maxWind>=45)
+alerts.push(`Strong wind signal: gusts up to ${Math.round(maxGust)} km/h.`);
+
+if(minVisibility<1000)
+alerts.push("Low visibility may occur.");
+
+if(maxUv>=8)
+alerts.push(`Very high UV index may reach ${Math.round(maxUv)}. Limit prolonged midday sun exposure.`);
+
 box.className="alert "+(alerts.length?"rain":"clear");
-box.textContent=alerts.length?"⚠️ Weather heads-up (forecast-based): "+alerts.join(" "):"✅ No severe-weather signals detected in the next 24 hours.";
+
+box.textContent=alerts.length
+?"⚠️ Weather heads-up (forecast-based): "+alerts.join(" ")
+:"✅ No severe-weather signals detected in the next 24 hours.";
 }
 
 function renderChart(){
-const values=(hourly.temperature_2m||[]).slice(0,24);if(!values.length)return;
-const w=720,h=220,left=42,right=18,top=24,bottom=34,min=Math.min(...values)-2,max=Math.max(...values)+2;
+const values=(hourly.temperature_2m||[]).slice(0,24);
+if(!values.length)return;
+
+const w=720,h=220,left=42,right=18,top=24,bottom=34;
+const min=Math.min(...values)-2;
+const max=Math.max(...values)+2;
+
 const x=i=>left+i*(w-left-right)/Math.max(1,values.length-1);
 const y=v=>top+(max-v)*(h-top-bottom)/(max-min||1);
+
 const points=values.map((v,i)=>`${x(i)},${y(v)}`).join(" ");
-let labels="";values.forEach((v,i)=>{if(i%4===0)labels+=`<text x="${x(i)}" y="${h-8}" text-anchor="middle" fill="#d7eaff" font-size="12">${time(hourly.time[i])}</text>`});
-$("chart").innerHTML=`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Temperature trend chart"><line x1="${left}" y1="${h-bottom}" x2="${w-right}" y2="${h-bottom}" stroke="#ffffff66"/><polyline points="${points}" fill="none" stroke="#ffca64" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>${values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" fill="#fff"><title>${time(hourly.time[i])}: ${temp(v)}</title></circle>`).join("")}${values.filter((v,i)=>i%4===0).map((v,i)=>{const idx=i*4;return `<text x="${x(idx)}" y="${y(v)-12}" text-anchor="middle" fill="white" font-size="12">${temp(v)}</text>`}).join("")}${labels}</svg><p class="chart-note">Hover over a point to see its exact time and temperature.</p>`;
+
+let labels="";
+
+values.forEach((v,i)=>{
+if(i%4===0)
+labels+=`<text x="${x(i)}" y="${h-8}" text-anchor="middle" fill="#d7eaff" font-size="12">${time(hourly.time[i])}</text>`;
+});
+
+$("chart").innerHTML=`
+<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Temperature trend chart">
+<line x1="${left}" y1="${h-bottom}" x2="${w-right}" y2="${h-bottom}" stroke="#ffffff66"/>
+<polyline points="${points}" fill="none" stroke="#ffca64" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+${values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.5" fill="#fff"><title>${time(hourly.time[i])}: ${temp(v)}</title></circle>`).join("")}
+${values.filter((v,i)=>i%4===0).map((v,i)=>{
+const idx=i*4;
+return `<text x="${x(idx)}" y="${y(v)-12}" text-anchor="middle" fill="white" font-size="12">${temp(v)}</text>`;
+}).join("")}
+${labels}
+</svg>
+<p class="chart-note">Hover over a point to see its exact time and temperature.</p>`;
 }
+
 function renderHourly(){
-const el=$("hourly");el.innerHTML="";
-(hourly.time||[]).slice(0,24).forEach((t,i)=>{const d=document.createElement("div");d.className="hour";d.innerHTML=`<small>${time(t)}</small><div class="ico">${info(hourly.weather_code[i])[1]}</div><b>${temp(hourly.temperature_2m[i])}</b><small>💧 ${hourly.precipitation_probability?.[i]??0}%</small><small>💨 ${Math.round(hourly.wind_speed_10m?.[i]??0)} km/h</small>`;el.appendChild(d)});
+const el=$("hourly");
+el.innerHTML="";
+
+(hourly.time||[]).slice(0,24).forEach((t,i)=>{
+const d=document.createElement("div");
+d.className="hour";
+d.innerHTML=`
+<small>${time(t)}</small>
+<div class="ico">${info(hourly.weather_code[i])[1]}</div>
+<b>${temp(hourly.temperature_2m[i])}</b>
+<small>💧 ${hourly.precipitation_probability?.[i]??0}%</small>
+<small>💨 ${Math.round(hourly.wind_speed_10m?.[i]??0)} km/h</small>`;
+el.appendChild(d);
+});
+
 if(!el.children.length)el.textContent="Hourly forecast unavailable.";
 }
+
 function renderDays(){
-const el=$("forecast");el.innerHTML="";
-for(let i=1;i<=5;i++){if(!daily.time?.[i])continue;const d=document.createElement("div");d.className="day-card";d.innerHTML=`<small>${day(daily.time[i])}</small><div class="ico">${info(daily.weather_code[i])[1]}</div><b>${temp(daily.temperature_2m_max[i])}</b><span>${temp(daily.temperature_2m_min[i])}</span><span>💧 ${daily.precipitation_probability_max?.[i]??0}%</span>`;el.appendChild(d)}
+const el=$("forecast");
+el.innerHTML="";
+
+for(let i=1;i<=5;i++){
+if(!daily.time?.[i])continue;
+
+const d=document.createElement("div");
+d.className="day-card";
+
+d.innerHTML=`
+<small>${day(daily.time[i])}</small>
+<div class="ico">${info(daily.weather_code[i])[1]}</div>
+<b>${temp(daily.temperature_2m_max[i])}</b>
+<span>${temp(daily.temperature_2m_min[i])}</span>
+<span>💧 ${daily.precipitation_probability_max?.[i]??0}%</span>`;
+
+el.appendChild(d);
 }
+}
+
 async function loadWeather(lat,lon,name){
 lastCoords={lat,lon};
-const id=++weatherVersion;setMessage("Loading weather...");
+
+const id=++weatherVersion;
+setMessage("Loading weather...");
 $("city").textContent=name;
+
 try{
 const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m,wind_gusts_10m,pressure_msl,cloud_cover,dew_point_2m,visibility,uv_index&hourly=temperature_2m,precipitation_probability,precipitation,weather_code,wind_speed_10m,wind_gusts_10m,uv_index,visibility&daily=sunrise,sunset,weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max&forecast_days=6&forecast_hours=24&timezone=auto`;
-const r=await fetch(url);if(!r.ok)throw Error("Weather service is unavailable. Please try again.");
-const data=await r.json();if(id!==weatherVersion)return false;
-if(!data.current||!data.hourly||!data.daily)throw Error("Weather data is incomplete.");
-weather=data.current;hourly=data.hourly;daily=data.daily;render();setMessage("Weather updated successfully!","good");return true;
-}catch(e){if(id!==weatherVersion)return false;setMessage(e.message||"Could not load weather.","error");return false}
+
+const r=await fetch(url);
+
+if(!r.ok)throw Error("Weather service is unavailable. Please try again.");
+
+const data=await r.json();
+
+if(id!==weatherVersion)return false;
+
+if(!data.current||!data.hourly||!data.daily)
+throw Error("Weather data is incomplete.");
+
+weather=data.current;
+hourly=data.hourly;
+daily=data.daily;
+
+render();
+setMessage("Weather updated successfully!","good");
+return true;
+
+}catch(e){
+if(id!==weatherVersion)return false;
+setMessage(e.message||"Could not load weather.","error");
+return false;
 }
+}
+
 async function renderWeatherMap(lat,lon){
 const request=++mapRequestVersion;
-if(!window.L){$("weatherMap").textContent="Map library could not be loaded. Check your internet connection.";return;}
-if(!weatherMap){weatherMap=L.map("weatherMap",{scrollWheelZoom:false}).setView([lat,lon],11);L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18,attribution:"© OpenStreetMap contributors"}).addTo(weatherMap);}
-weatherMap.setView([lat,lon],11);if(mapLayer)mapLayer.remove();mapLayer=L.layerGroup().addTo(weatherMap);
-const points=[{lat,lon,label:"Selected location"},{lat:lat+0.045,lon,label:"North"},{lat:lat-0.045,lon,label:"South"},{lat,lon:lon+0.055,label:"East"},{lat,lon:lon-0.055,label:"West"}];
-L.marker([lat,lon]).addTo(mapLayer).bindPopup("<b>Selected location</b><br>"+$("city").textContent).openPopup();
+
+if(!window.L){
+$("weatherMap").textContent="Map library could not be loaded. Check your internet connection.";
+return;
+}
+
+if(!weatherMap){
+weatherMap=L.map("weatherMap",{scrollWheelZoom:false}).setView([lat,lon],11);
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+maxZoom:18,
+attribution:"© OpenStreetMap contributors"
+}).addTo(weatherMap);
+}
+
+weatherMap.setView([lat,lon],11);
+
+if(mapLayer)mapLayer.remove();
+
+mapLayer=L.layerGroup().addTo(weatherMap);
+
+const points=[
+{lat,lon,label:"Selected location"},
+{lat:lat+0.045,lon,label:"North"},
+{lat:lat-0.045,lon,label:"South"},
+{lat,lon:lon+0.055,label:"East"},
+{lat,lon:lon-0.055,label:"West"}
+];
+
+L.marker([lat,lon]).addTo(mapLayer)
+.bindPopup("<b>Selected location</b><br>"+$("city").textContent)
+.openPopup();
+
 const nearby=points.slice(1);
-await Promise.all(nearby.map(async p=>{try{const url=`https://api.open-meteo.com/v1/forecast?latitude=${p.lat}&longitude=${p.lon}&current=temperature_2m&timezone=auto`;const r=await fetch(url);if(!r.ok)throw Error();const d=await r.json();if(request!==mapRequestVersion)return;const v=d.current?.temperature_2m;if(v==null)return;L.circleMarker([p.lat,p.lon],{radius:9,color:"#ffffff",weight:2,fillColor:"#1479b8",fillOpacity:.9}).addTo(mapLayer).bindPopup(`<b>${p.label}</b><br>${temp(v)}`);}catch(e){/* Keep the main map usable if a nearby point fails. */}}));
+
+await Promise.all(nearby.map(async p=>{
+try{
+const url=`https://api.open-meteo.com/v1/forecast?latitude=${p.lat}&longitude=${p.lon}&current=temperature_2m&timezone=auto`;
+
+const r=await fetch(url);
+if(!r.ok)throw Error();
+
+const d=await r.json();
+
+if(request!==mapRequestVersion)return;
+
+const v=d.current?.temperature_2m;
+if(v==null)return;
+
+L.circleMarker([p.lat,p.lon],{
+radius:9,
+color:"#ffffff",
+weight:2,
+fillColor:"#1479b8",
+fillOpacity:.9
+}).addTo(mapLayer).bindPopup(`<b>${p.label}</b><br>${temp(v)}`);
+
+}catch(e){
+/* Keep the main map usable if a nearby point fails. */
+}
+}));
+
 setTimeout(()=>weatherMap.invalidateSize(),100);
 }
-async function loadPortFouad(){setMessage("Finding Port Fouad...");try{const list=await findCity("Port Fouad",10);const p=list.find(x=>/port fouad/i.test(x.name))||list.find(x=>/Port Said/i.test(x.admin1||""));if(!p)throw Error("Port Fouad was not found. Try searching manually.");input.value="Port Fouad";closeSuggestions();await loadWeather(p.latitude,p.longitude,"Port Fouad, Port Said, Egypt");}catch(e){setMessage(e.message,"error")}}
-function placeName(p){return [p.name,p.admin1,p.country].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).join(", ")}
-function closeSuggestions(){suggestions.classList.add("hidden");suggestions.innerHTML="";suggestionList=[]}
+
+/* FIXED: Port Fouad uses its coordinates directly. */
+async function loadPortFouad(){
+input.value="Port Fouad";
+closeSuggestions();
+setMessage("Loading Port Fouad weather...");
+
+await loadWeather(
+31.2475,
+32.3250,
+"Port Fouad, Port Said, Egypt"
+);
+}
+
+function placeName(p){
+return [p.name,p.admin1,p.country]
+.filter(Boolean)
+.filter((v,i,a)=>a.indexOf(v)===i)
+.join(", ");
+}
+
+function closeSuggestions(){
+suggestions.classList.add("hidden");
+suggestions.innerHTML="";
+suggestionList=[];
+}
+
 async function findCity(q,limit=6){
 const r=await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(q)}&count=${limit}&language=en&format=json`);
-if(!r.ok)throw Error("City search failed.");return (await r.json()).results||[];
+
+if(!r.ok)throw Error("City search failed.");
+
+return (await r.json()).results||[];
 }
+
 async function searchCity(q){
-if(!q.trim())return;closeSuggestions();setMessage("Searching for city...");
-try{const list=await findCity(q,1);if(!list.length)throw Error("City not found. Try another spelling.");
-const p=list[0];if(await loadWeather(p.latitude,p.longitude,placeName(p)))localStorage.setItem("lastCity",p.name);
-}catch(e){setMessage(e.message,"error")}
+if(!q.trim())return;
+
+closeSuggestions();
+setMessage("Searching for city...");
+
+try{
+const list=await findCity(q,1);
+
+if(!list.length)
+throw Error("City not found. Try another spelling.");
+
+const p=list[0];
+
+if(await loadWeather(p.latitude,p.longitude,placeName(p)))
+localStorage.setItem("lastCity",p.name);
+
+}catch(e){
+setMessage(e.message,"error");
 }
+}
+
 input.addEventListener("input",()=>{
-clearTimeout(suggestionTimer);const q=input.value.trim();const version=++suggestionVersion;
-if(q.length<2){closeSuggestions();return}
+clearTimeout(suggestionTimer);
+
+const q=input.value.trim();
+const version=++suggestionVersion;
+
+if(q.length<2){
+closeSuggestions();
+return;
+}
+
 suggestionTimer=setTimeout(async()=>{
-suggestions.classList.remove("hidden");suggestions.textContent="Searching...";
-try{const list=await findCity(q);if(version!==suggestionVersion)return;suggestionList=list;suggestions.innerHTML="";
-if(!list.length){suggestions.textContent="No matching cities found.";return}
-list.forEach((p,i)=>{const b=document.createElement("button");b.type="button";b.className="suggestion";b.innerHTML=`<span></span><small></small>`;b.querySelector("span").textContent=p.name;b.querySelector("small").textContent=[p.admin1,p.country].filter(Boolean).join(", ");b.addEventListener("click",async()=>{input.value=p.name;closeSuggestions();if(await loadWeather(p.latitude,p.longitude,placeName(p)))localStorage.setItem("lastCity",p.name)});suggestions.appendChild(b)});
-}catch(e){if(version===suggestionVersion)suggestions.textContent="Suggestions unavailable."}
+suggestions.classList.remove("hidden");
+suggestions.textContent="Searching...";
+
+try{
+const list=await findCity(q);
+
+if(version!==suggestionVersion)return;
+
+suggestionList=list;
+suggestions.innerHTML="";
+
+if(!list.length){
+suggestions.textContent="No matching cities found.";
+return;
+}
+
+list.forEach((p,i)=>{
+const b=document.createElement("button");
+b.type="button";
+b.className="suggestion";
+b.innerHTML=`<span></span><small></small>`;
+
+b.querySelector("span").textContent=p.name;
+b.querySelector("small").textContent=[p.admin1,p.country].filter(Boolean).join(", ");
+
+b.addEventListener("click",async()=>{
+input.value=p.name;
+closeSuggestions();
+
+if(await loadWeather(p.latitude,p.longitude,placeName(p)))
+localStorage.setItem("lastCity",p.name);
+});
+
+suggestions.appendChild(b);
+});
+
+}catch(e){
+if(version===suggestionVersion)
+suggestions.textContent="Suggestions unavailable.";
+}
 },300);
 });
-document.addEventListener("click",e=>{if(!form.contains(e.target))closeSuggestions()});
-form.addEventListener("submit",e=>{e.preventDefault();clearTimeout(suggestionTimer);searchCity(input.value)});
-$("portFouadButton").addEventListener("click",loadPortFouad);
-$("unitToggle").addEventListener("click",()=>{unit=unit==="C"?"F":"C";localStorage.setItem("temperatureUnit",unit);render()});
-$("locationButton").addEventListener("click",()=>{
-if(!navigator.geolocation){setMessage("Geolocation is not supported by this browser.","error");return}
-const b=$("locationButton");b.disabled=true;b.textContent="Getting location...";
-navigator.geolocation.getCurrentPosition(async pos=>{await loadWeather(pos.coords.latitude,pos.coords.longitude,"Your Current Location");b.disabled=false;b.textContent="📍 Use My Location"},err=>{b.disabled=false;b.textContent="📍 Use My Location";setMessage(err.code===1?"Location permission denied.": "Could not get your location. Try again.","error")},{timeout:15000,maximumAge:300000});
+
+document.addEventListener("click",e=>{
+if(!form.contains(e.target))closeSuggestions();
 });
+
+form.addEventListener("submit",e=>{
+e.preventDefault();
+clearTimeout(suggestionTimer);
+searchCity(input.value);
+});
+
+$("portFouadButton").addEventListener("click",loadPortFouad);
+
+$("unitToggle").addEventListener("click",()=>{
+unit=unit==="C"?"F":"C";
+localStorage.setItem("temperatureUnit",unit);
+render();
+});
+
+$("locationButton").addEventListener("click",()=>{
+if(!navigator.geolocation){
+setMessage("Geolocation is not supported by this browser.","error");
+return;
+}
+
+const b=$("locationButton");
+b.disabled=true;
+b.textContent="Getting location...";
+
+navigator.geolocation.getCurrentPosition(
+async pos=>{
+await loadWeather(
+pos.coords.latitude,
+pos.coords.longitude,
+"Your Current Location"
+);
+
+b.disabled=false;
+b.textContent="📍 Use My Location";
+},
+err=>{
+b.disabled=false;
+b.textContent="📍 Use My Location";
+
+setMessage(
+err.code===1?"Location permission denied.":"Could not get your location. Try again.",
+"error"
+);
+},
+{timeout:15000,maximumAge:300000}
+);
+});
+
 $("unitToggle").textContent=unit==="C"?"Switch to °F":"Switch to °C";
-const saved=localStorage.getItem("lastCity");if(saved){input.value=saved;searchCity(saved)}
+
+const saved=localStorage.getItem("lastCity");
+
+if(saved){
+input.value=saved;
+searchCity(saved);
+}
 </script>
+
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </body>
 </html>
