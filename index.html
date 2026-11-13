@@ -7,6 +7,7 @@
   <title>Weather App | Zeyad Refaat</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       min-height: 100vh;
       font-family: Arial, sans-serif;
@@ -16,9 +17,10 @@
       place-items: center;
       padding: 20px;
     }
+
     .app {
       width: 100%;
-      max-width: 430px;
+      max-width: 480px;
       padding: 30px;
       border: 1px solid #ffffff40;
       border-radius: 25px;
@@ -27,9 +29,11 @@
       box-shadow: 0 20px 50px #00152c55;
       text-align: center;
     }
+
     h1 { font-size: 28px; margin-bottom: 8px; }
     .subtitle { color: #d7eaff; margin-bottom: 25px; }
     .search { display: flex; gap: 8px; }
+
     input {
       min-width: 0;
       flex: 1;
@@ -39,6 +43,7 @@
       outline: none;
       font-size: 15px;
     }
+
     button {
       padding: 13px 16px;
       border: 0;
@@ -48,19 +53,23 @@
       font-weight: bold;
       cursor: pointer;
     }
+
     button:hover { background: #ffdc91; }
+
     .unit-toggle {
       margin-top: 18px;
       background: #ffffff25;
       color: white;
       border: 1px solid #ffffff60;
     }
+
     .unit-toggle:hover { background: #ffffff40; }
     .weather { margin-top: 28px; }
     .icon { font-size: 75px; margin: 15px 0; }
     .temp { font-size: 58px; font-weight: bold; }
     .description { font-size: 20px; margin: 8px 0; }
     .city { font-size: 23px; margin-top: 15px; }
+
     .details {
       display: flex;
       justify-content: space-around;
@@ -69,12 +78,88 @@
       padding-top: 20px;
       border-top: 1px solid #ffffff40;
     }
-    .detail { color: #e4f2ff; font-size: 14px; line-height: 1.8; }
-    .detail strong { display: block; color: white; font-size: 18px; }
-    .message { margin-top: 18px; color: #ffe3a8; min-height: 20px; }
-    footer { margin-top: 25px; font-size: 12px; color: #d7eaff; }
+
+    .detail {
+      color: #e4f2ff;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .detail strong {
+      display: block;
+      color: white;
+      font-size: 18px;
+    }
+
+    .forecast-section {
+      margin-top: 30px;
+      padding-top: 22px;
+      border-top: 1px solid #ffffff40;
+    }
+
+    .forecast-section h2 {
+      font-size: 21px;
+      margin-bottom: 18px;
+    }
+
+    .forecast {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .forecast-day {
+      padding: 12px 4px;
+      border-radius: 14px;
+      background: #ffffff20;
+      min-width: 0;
+    }
+
+    .forecast-day .day {
+      font-size: 12px;
+      color: #d7eaff;
+      margin-bottom: 10px;
+    }
+
+    .forecast-day .forecast-icon {
+      font-size: 25px;
+      margin-bottom: 10px;
+    }
+
+    .forecast-day .max {
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .forecast-day .min {
+      font-size: 12px;
+      color: #d7eaff;
+      margin-top: 5px;
+    }
+
+    .message {
+      margin-top: 18px;
+      color: #ffe3a8;
+      min-height: 20px;
+    }
+
+    footer {
+      margin-top: 25px;
+      font-size: 12px;
+      color: #d7eaff;
+    }
+
+    @media (max-width: 380px) {
+      .app { padding: 20px 14px; }
+      .forecast { gap: 4px; }
+      .forecast-day { padding: 10px 2px; }
+      .forecast-day .day { font-size: 10px; }
+      .forecast-day .max { font-size: 12px; }
+      .forecast-day .min { font-size: 11px; }
+    }
   </style>
 </head>
+
 <body>
   <main class="app">
     <h1>Weather App</h1>
@@ -89,7 +174,7 @@
       Switch to °F
     </button>
 
-    <section class="weather" id="weather">
+    <section class="weather">
       <div class="icon" id="icon">🌤️</div>
       <div class="temp" id="temp">--°C</div>
       <div class="description" id="description">Search for a city</div>
@@ -99,6 +184,13 @@
         <div class="detail">Feels like<strong id="feels">--°C</strong></div>
         <div class="detail">Humidity<strong id="humidity">--%</strong></div>
         <div class="detail">Wind<strong id="wind">-- km/h</strong></div>
+      </div>
+    </section>
+
+    <section class="forecast-section">
+      <h2>5-Day Forecast</h2>
+      <div class="forecast" id="forecast">
+        <p>Search for a city to see the forecast.</p>
       </div>
     </section>
 
@@ -115,6 +207,7 @@
     let currentUnit = localStorage.getItem("temperatureUnit") || "C";
     let currentTemperature = null;
     let currentFeelsLike = null;
+    let forecastData = null;
 
     const weatherCodes = {
       0: ["Clear sky", "☀️"],
@@ -145,19 +238,71 @@
       return celsius;
     }
 
-    function displayTemperature() {
+    function formatTemperature(value) {
       const unit = currentUnit === "C" ? "°C" : "°F";
+      return `${Math.round(convertTemperature(value))}${unit}`;
+    }
 
+    function displayTemperature() {
       if (currentTemperature === null) return;
 
       document.getElementById("temp").textContent =
-        `${Math.round(convertTemperature(currentTemperature))}${unit}`;
+        formatTemperature(currentTemperature);
 
       document.getElementById("feels").textContent =
-        `${Math.round(convertTemperature(currentFeelsLike))}${unit}`;
+        formatTemperature(currentFeelsLike);
 
       unitToggle.textContent =
         currentUnit === "C" ? "Switch to °F" : "Switch to °C";
+
+      displayForecast();
+    }
+
+    function displayForecast() {
+      const forecastElement = document.getElementById("forecast");
+
+      if (!forecastData) return;
+
+      forecastElement.innerHTML = "";
+
+      for (let i = 1; i <= 5; i++) {
+        const date = new Date(
+          forecastData.time[i] + "T12:00:00"
+        );
+
+        const dayName = date.toLocaleDateString("en-US", {
+          weekday: "short"
+        });
+
+        const weatherCode = forecastData.weather_code[i];
+        const icon = (weatherCodes[weatherCode] || ["Unknown", "🌡️"])[1];
+
+        const dayCard = document.createElement("div");
+        dayCard.className = "forecast-day";
+
+        const day = document.createElement("div");
+        day.className = "day";
+        day.textContent = dayName;
+
+        const weatherIcon = document.createElement("div");
+        weatherIcon.className = "forecast-icon";
+        weatherIcon.textContent = icon;
+
+        const max = document.createElement("div");
+        max.className = "max";
+        max.textContent = formatTemperature(
+          forecastData.temperature_2m_max[i]
+        );
+
+        const min = document.createElement("div");
+        min.className = "min";
+        min.textContent = formatTemperature(
+          forecastData.temperature_2m_min[i]
+        );
+
+        dayCard.append(day, weatherIcon, max, min);
+        forecastElement.appendChild(dayCard);
+      }
     }
 
     unitToggle.addEventListener("click", () => {
@@ -170,6 +315,8 @@
       if (!cityName) return;
 
       message.textContent = "Loading...";
+      document.getElementById("forecast").textContent =
+        "Loading forecast...";
 
       try {
         const geoResponse = await fetch(
@@ -187,7 +334,7 @@
         const place = geoData.results[0];
 
         const weatherResponse = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&timezone=auto`
+          `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&forecast_days=6&timezone=auto`
         );
 
         if (!weatherResponse.ok) {
@@ -202,6 +349,7 @@
 
         currentTemperature = current.temperature_2m;
         currentFeelsLike = current.apparent_temperature;
+        forecastData = data.daily;
 
         document.getElementById("icon").textContent =
           current.is_day ? icon :
@@ -227,6 +375,9 @@
       } catch (error) {
         message.textContent =
           error.message || "Something went wrong.";
+
+        document.getElementById("forecast").textContent =
+          "Forecast unavailable. Try searching again.";
       }
     }
 
