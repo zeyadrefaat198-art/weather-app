@@ -49,6 +49,13 @@
       cursor: pointer;
     }
     button:hover { background: #ffdc91; }
+    .unit-toggle {
+      margin-top: 18px;
+      background: #ffffff25;
+      color: white;
+      border: 1px solid #ffffff60;
+    }
+    .unit-toggle:hover { background: #ffffff40; }
     .weather { margin-top: 28px; }
     .icon { font-size: 75px; margin: 15px 0; }
     .temp { font-size: 58px; font-weight: bold; }
@@ -78,6 +85,10 @@
       <button type="submit">Search</button>
     </form>
 
+    <button class="unit-toggle" id="unitToggle" type="button">
+      Switch to °F
+    </button>
+
     <section class="weather" id="weather">
       <div class="icon" id="icon">🌤️</div>
       <div class="temp" id="temp">--°C</div>
@@ -99,6 +110,11 @@
     const form = document.getElementById("searchForm");
     const input = document.getElementById("cityInput");
     const message = document.getElementById("message");
+    const unitToggle = document.getElementById("unitToggle");
+
+    let currentUnit = localStorage.getItem("temperatureUnit") || "C";
+    let currentTemperature = null;
+    let currentFeelsLike = null;
 
     const weatherCodes = {
       0: ["Clear sky", "☀️"],
@@ -121,6 +137,34 @@
       82: ["Heavy showers", "⛈️"],
       95: ["Thunderstorm", "⛈️"]
     };
+
+    function convertTemperature(celsius) {
+      if (currentUnit === "F") {
+        return (celsius * 9 / 5) + 32;
+      }
+      return celsius;
+    }
+
+    function displayTemperature() {
+      const unit = currentUnit === "C" ? "°C" : "°F";
+
+      if (currentTemperature === null) return;
+
+      document.getElementById("temp").textContent =
+        `${Math.round(convertTemperature(currentTemperature))}${unit}`;
+
+      document.getElementById("feels").textContent =
+        `${Math.round(convertTemperature(currentFeelsLike))}${unit}`;
+
+      unitToggle.textContent =
+        currentUnit === "C" ? "Switch to °F" : "Switch to °C";
+    }
+
+    unitToggle.addEventListener("click", () => {
+      currentUnit = currentUnit === "C" ? "F" : "C";
+      localStorage.setItem("temperatureUnit", currentUnit);
+      displayTemperature();
+    });
 
     async function getWeather(cityName) {
       if (!cityName) return;
@@ -156,20 +200,19 @@
         const [description, icon] =
           weatherCodes[current.weather_code] || ["Unknown", "🌡️"];
 
+        currentTemperature = current.temperature_2m;
+        currentFeelsLike = current.apparent_temperature;
+
         document.getElementById("icon").textContent =
           current.is_day ? icon :
           (current.weather_code === 0 ? "🌙" : icon);
 
-        document.getElementById("temp").textContent =
-          `${Math.round(current.temperature_2m)}°C`;
+        displayTemperature();
 
         document.getElementById("description").textContent = description;
 
         document.getElementById("city").textContent =
           `${place.name}, ${place.country}`;
-
-        document.getElementById("feels").textContent =
-          `${Math.round(current.apparent_temperature)}°C`;
 
         document.getElementById("humidity").textContent =
           `${current.relative_humidity_2m}%`;
@@ -177,7 +220,6 @@
         document.getElementById("wind").textContent =
           `${Math.round(current.wind_speed_10m)} km/h`;
 
-        // Save the last successfully searched city
         localStorage.setItem("lastCity", place.name);
 
         message.textContent = "Weather updated successfully!";
@@ -190,12 +232,12 @@
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-
-      const cityName = input.value.trim();
-      getWeather(cityName);
+      getWeather(input.value.trim());
     });
 
-    // Load the last searched city when the app opens
+    unitToggle.textContent =
+      currentUnit === "C" ? "Switch to °F" : "Switch to °C";
+
     const lastCity = localStorage.getItem("lastCity");
 
     if (lastCity) {
