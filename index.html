@@ -122,21 +122,20 @@
       95: ["Thunderstorm", "⛈️"]
     };
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-
-      const cityName = input.value.trim();
+    async function getWeather(cityName) {
       if (!cityName) return;
 
       message.textContent = "Loading...";
-      
+
       try {
         const geoResponse = await fetch(
           `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=en&format=json`
         );
+
         if (!geoResponse.ok) throw new Error("Network error");
 
         const geoData = await geoResponse.json();
+
         if (!geoData.results?.length) {
           throw new Error("City not found. Try another name.");
         }
@@ -146,31 +145,63 @@
         const weatherResponse = await fetch(
           `https://api.open-meteo.com/v1/forecast?latitude=${place.latitude}&longitude=${place.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m&timezone=auto`
         );
-        if (!weatherResponse.ok) throw new Error("Could not get weather data.");
+
+        if (!weatherResponse.ok) {
+          throw new Error("Could not get weather data.");
+        }
 
         const data = await weatherResponse.json();
         const current = data.current;
-        const [description, icon] = weatherCodes[current.weather_code] || ["Unknown", "🌡️"];
+
+        const [description, icon] =
+          weatherCodes[current.weather_code] || ["Unknown", "🌡️"];
 
         document.getElementById("icon").textContent =
-          current.is_day ? icon : (current.weather_code === 0 ? "🌙" : icon);
+          current.is_day ? icon :
+          (current.weather_code === 0 ? "🌙" : icon);
+
         document.getElementById("temp").textContent =
           `${Math.round(current.temperature_2m)}°C`;
+
         document.getElementById("description").textContent = description;
+
         document.getElementById("city").textContent =
           `${place.name}, ${place.country}`;
+
         document.getElementById("feels").textContent =
           `${Math.round(current.apparent_temperature)}°C`;
+
         document.getElementById("humidity").textContent =
           `${current.relative_humidity_2m}%`;
+
         document.getElementById("wind").textContent =
           `${Math.round(current.wind_speed_10m)} km/h`;
 
+        // Save the last successfully searched city
+        localStorage.setItem("lastCity", place.name);
+
         message.textContent = "Weather updated successfully!";
+
       } catch (error) {
-        message.textContent = error.message || "Something went wrong.";
+        message.textContent =
+          error.message || "Something went wrong.";
       }
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const cityName = input.value.trim();
+      getWeather(cityName);
     });
+
+    // Load the last searched city when the app opens
+    const lastCity = localStorage.getItem("lastCity");
+
+    if (lastCity) {
+      input.value = lastCity;
+      getWeather(lastCity);
+    }
   </script>
 </body>
 </html>
